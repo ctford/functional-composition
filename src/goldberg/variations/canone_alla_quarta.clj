@@ -9,8 +9,8 @@
 (ns goldberg.variations.canone-alla-quarta
   (:use
     [clojure.repl]
-    [overtone.live :only [stop at now definst sin-osc env-gen asr pluck line FREE perc]]
-    [overtone.inst.sampled-piano :only [sampled-piano] :rename {sampled-piano piano#}]))
+    [overtone.live :only
+     [midi->hz stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Sound                                        ;;
@@ -43,7 +43,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn play# [notes] 
-  (let [play-at# (fn [[ms midi]] (at ms (piano# midi)))]
+  (let [play-at# (fn [[ms midi]] (at ms (bell# (midi->hz midi))))]
     (->> notes (map play-at#) dorun)
     notes))
 
