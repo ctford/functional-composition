@@ -10,16 +10,20 @@
   (:use
     [clojure.repl]
     [overtone.live :only
-      [midi->hz stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
+      [stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Sound                                        ;;
+;; Sine waves                                   ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst tone# [frequency 440] (sin-osc frequency))
 (definst beep# [frequency 440 duration 1000]
   (let [envelope (env-gen (line 1.0 0 (/ duration 1000) FREE))]
           (* envelope (sin-osc frequency))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Harmonics                                    ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst bell# [frequency 440 duration 4.0]
   (let [harmonic-decay [1.0 0.5 0.25 0.125]] 
@@ -36,6 +40,15 @@
 ;(stop)
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Well temperament                             ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn midi->hz [note]
+    (*
+      8.1757989156 ; midi zero
+      (java.lang.Math/pow 2.0 (/ note 12.0))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Melody                                       ;;
