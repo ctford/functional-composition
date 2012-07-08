@@ -16,22 +16,23 @@
 ;; Sound                                        ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(definst beep# [freq 440] (sin-osc freq))
-(definst pure# [freq 440 dur 1000]
-  (let [envelope (env-gen (line 1.0 0 (/ dur 1000) FREE))]
-          (* envelope (sin-osc freq))))
+(definst tone# [frequency 440] (sin-osc frequency))
+(definst beep# [frequency 440 duration 1000]
+  (let [envelope (env-gen (line 1.0 0 (/ duration 1000) FREE))]
+          (* envelope (sin-osc frequency))))
 
-(definst bell# [freq 440 dur 4.0]
+(definst bell# [frequency 440 duration 4.0]
   (let [harmonic-decay [1.0 0.5 0.25 0.125]] 
          (map-indexed
            (fn [harmonic proportion]
-             (let [envelope (env-gen (perc 0.01 (* dur proportion)))
-                   overtone (* (inc harmonic) freq)]
-                (* envelope proportion (sin-osc overtone))))
+             (let [envelope (env-gen (perc 0.01 (* duration proportion)))
+                   overtone (* (inc harmonic) frequency)
+                   ring (* envelope proportion (sin-osc overtone))]
+               ring))
           harmonic-decay)))
 
+;(tone#)
 ;(beep#)
-;(pure#)
 ;(bell#)
 ;(stop)
 
