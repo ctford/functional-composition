@@ -72,6 +72,18 @@
 ;; Scale                                        ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defmacro defs [names values]
+  `(do ~@(map
+           (fn [name value] `(def ~name ~value))
+           names (eval values))))
+
+(defn start-from [base] (partial + base))
+(defs [sharp flat] [inc dec])
+(defs [C D E F G A B]
+  (map
+    (comp start-from (start-from 60) major)
+    (range)))
+
 (defn sum-n [series n] (reduce + (take n series)))
 
 (defn scale [intervals]
@@ -80,19 +92,31 @@
      ((comp - (scale (reverse intervals)) -) %)))
 
 (def major (scale [2 2 1 2 2 2 1]))
-(def minor (scale [2 1 2 2 1 2 2]))
 
-(defn start-from [base] (partial + base))
-(def G (start-from 67))
-(def D (start-from 74))
-(def G-minor (comp G minor))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Modes                                        ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def blues (scale [3 2 1 1 3 2]))
+(def pentatonic (scale [3 2 2 3 2]))
+(def chromatic (scale [1]))
+
+(defn mode [scale n]
+  (comp
+    #(- % (scale n))
+    scale
+    (start-from n)))
+
+(defs
+  [ionian dorian phrygian lydian mixolydian aeolian locrian]
+  (map (partial mode major) (range)))
+
+(def minor aeolian)
 
 ;(even-melody#
 ;  (let [_ -100]
 ;    (map (comp D major) [0 1 2 0, 0 1 2 0, 2 3 4 _, 2 3 4 _]))
 ;)
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Abstractions                                 ;;
@@ -173,4 +197,4 @@
     (-> bass play-now#)
     (-> melody canone-alla-quarta play-now#)))
 
-;(canon# (now) (bpm 90) (comp D major))
+;(canon# (now) (bpm 90) (comp G major))
