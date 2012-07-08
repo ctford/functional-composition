@@ -1,14 +1,45 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Canon Fodder - Chris Ford (ThoughtWorks)     ;;
+;; Functional Composition                       ;;
 ;;                                              ;;
+;; Chris Ford (ThoughtWorks)                    ;;
 ;; http://github.com/ctford/goldberg            ;;
 ;; http://github.com/overtone/overtone          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns goldberg.variations.canone-alla-quarta
   (:use
-    [overtone.live :only [at now stop]]
+    [clojure.repl]
+    [overtone.live :only [stop at now definst sin-osc env-gen asr pluck line FREE perc]]
     [overtone.inst.sampled-piano :only [sampled-piano] :rename {sampled-piano piano#}]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Sound                                        ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(definst beep# [freq 440] (sin-osc freq))
+(definst pure# [freq 440 dur 1000]
+  (let [envelope (env-gen (line 1.0 0 (/ dur 1000) FREE))]
+          (* envelope (sin-osc freq))))
+
+(definst bell# [freq 440 dur 4.0]
+  (let [harmonic-decay [1.0 0.5 0.25 0.125]] 
+         (map-indexed
+           (fn [harmonic proportion]
+             (let [envelope (env-gen (perc 0.01 (* dur proportion)))
+                   overtone (* (inc harmonic) freq)]
+                (* envelope proportion (sin-osc overtone))))
+          harmonic-decay)))
+
+;(beep#)
+;(pure#)
+;(bell#)
+;(stop)
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Melody                                       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn play# [notes] 
   (let [play-at# (fn [[ms midi]] (at ms (piano# midi)))]
