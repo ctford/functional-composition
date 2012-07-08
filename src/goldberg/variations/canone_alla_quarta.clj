@@ -10,7 +10,7 @@
   (:use
     [clojure.repl]
     [overtone.live :only
-      [stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
+      [detect-silence stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Sine waves                                   ;;
@@ -26,13 +26,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst bell# [frequency 440 duration 4.0 volume 1.0]
-  (let [harmonic-decay [1.0 0.5 0.25 0.125]] 
-         (map-indexed
-           (fn [harmonic proportion]
-             (let [envelope (env-gen (perc 0.01 (* duration proportion)))
-                   overtone (* (inc harmonic) frequency)]
-               (* envelope volume proportion (sin-osc overtone))))
-          harmonic-decay)))
+  (let [harmonic-decay [1.0 0.5 0.25 0.125]
+        partials (map-indexed
+                   (fn [harmonic proportion]
+                     (let [envelope (env-gen (perc 0.01 (* duration proportion)))
+                           overtone (* (inc harmonic) frequency)]
+                       (* envelope volume proportion (sin-osc overtone))))
+                   harmonic-decay)]
+    (detect-silence (first partials) :action FREE)
+    partials))
 
 ;(tone#)
 ;(beep#)
