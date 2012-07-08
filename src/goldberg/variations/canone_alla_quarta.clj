@@ -25,13 +25,13 @@
 ;; Harmonics                                    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(definst bell# [frequency 440 duration 4.0]
+(definst bell# [frequency 440 duration 4.0 volume 1.0]
   (let [harmonic-decay [1.0 0.5 0.25 0.125]] 
          (map-indexed
            (fn [harmonic proportion]
              (let [envelope (env-gen (perc 0.01 (* duration proportion)))
                    overtone (* (inc harmonic) frequency)]
-               (* envelope proportion (sin-osc overtone))))
+               (* envelope volume proportion (sin-osc overtone))))
           harmonic-decay)))
 
 ;(tone#)
@@ -55,7 +55,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn play# [notes] 
-  (let [play-at# (fn [[ms midi]] (at ms (bell# (midi->hz midi))))]
+  (let [play-at# (fn [[ms midi]] (at ms (bell# (midi->hz midi) 2.0 0.3)))]
     (->> notes (map play-at#) dorun)
     notes))
 
@@ -64,8 +64,8 @@
         notes (map vector times pitches)]
     (play# notes)))
 
-;(piano# 55)
-;(even-melody# (range 60 67))
+
+;(even-melody# (range 70 81))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
