@@ -10,7 +10,7 @@
   (:use
     [clojure.repl]
     [overtone.live :only
-     [midi->hz stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
+      [midi->hz stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Sound                                        ;;
@@ -26,9 +26,8 @@
          (map-indexed
            (fn [harmonic proportion]
              (let [envelope (env-gen (perc 0.01 (* duration proportion)))
-                   overtone (* (inc harmonic) frequency)
-                   ring (* envelope proportion (sin-osc overtone))]
-               ring))
+                   overtone (* (inc harmonic) frequency)]
+               (* envelope proportion (sin-osc overtone))))
           harmonic-decay)))
 
 ;(tone#)
