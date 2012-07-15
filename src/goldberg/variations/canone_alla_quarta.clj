@@ -25,16 +25,17 @@
 ;; Harmonics                                    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(definst bell# [frequency 440 duration 4.0 volume 1.0]
-  (let [harmonic-decay [1.0 0.5 0.25 0.125]
+(definst bell# [frequency 300 duration 7.0 volume 1.0]
+  (let [harmonic-decay [1.0 0.5 0.25 0.125 0.05 0.05 0.05]
         partials (map-indexed
                    (fn [harmonic proportion]
                      (let [envelope (env-gen (perc 0.01 (* duration proportion)))
                            overtone (* (inc harmonic) frequency)]
                        (* envelope volume proportion (sin-osc overtone))))
-                   harmonic-decay)]
-    (detect-silence (first partials) :action FREE)
-    (mix partials)))
+                   harmonic-decay)
+        whole (mix partials)]
+    (detect-silence whole :action FREE)
+    whole))
 
 ;(tone#)
 ;(beep#)
