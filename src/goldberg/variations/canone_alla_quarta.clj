@@ -10,7 +10,7 @@
   (:use
     [clojure.repl]
     [overtone.live :only
-      [detect-silence stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
+      [mix detect-silence stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Sine waves                                   ;;
@@ -34,7 +34,7 @@
                        (* envelope volume proportion (sin-osc overtone))))
                    harmonic-decay)]
     (detect-silence (first partials) :action FREE)
-    partials))
+    (mix partials)))
 
 ;(tone#)
 ;(beep#)
@@ -59,7 +59,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn play# [notes] 
-  (let [play-at# (fn [[ms midi]] (at ms (bell# (midi->hz midi) 2.0 0.3)))]
+  (let [play-at# (fn [[ms midi]] (at ms (bell# (midi->hz midi) 3.0 0.3)))]
     (->> notes (map play-at#) dorun)
     notes))
 
