@@ -83,11 +83,6 @@
 
 (defn start-from [base] (partial + base))
 (defs [sharp flat] [inc dec])
-(defs [C D E F G A B]
-  (map
-    (comp start-from (start-from 60) major)
-    (range)))
-
 (defn sum-n [series n] (reduce + (take n series)))
 
 (defn scale [intervals]
@@ -96,6 +91,11 @@
      ((comp - (scale (reverse intervals)) -) %)))
 
 (def major (scale [2 2 1 2 2 2 1]))
+
+(defs [C D E F G A B]
+  (map
+    (comp start-from (start-from 60) major)
+    (range)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Modes                                        ;;
