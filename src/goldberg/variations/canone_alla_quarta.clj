@@ -25,21 +25,22 @@
 ;; Harmonics                                    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(definst bell# [frequency 300 duration 7.0 volume 1.0]
-  (let [harmonic-decay [1.0 0.5 0.25 0.125 0.05 0.05 0.05]
-        partials (map-indexed
-                   (fn [harmonic proportion]
-                     (let [envelope (env-gen (perc 0.01 (* duration proportion)))
-                           overtone (* (inc harmonic) frequency)]
-                       (* envelope volume proportion (sin-osc overtone))))
-                   harmonic-decay)
+(definst bell# [frequency 300 duration 10.0 h0 1.0 h1 0.5 h2 0.4 h3 0.25 h4 0.20 h5 0.125]
+  (let [harmonic-decay [h0 h1 h2 h3 h4 h5]
+        proportional-partial
+         (fn [harmonic proportion]
+           (let [envelope (env-gen (perc 0.01 (* duration proportion)))
+                 overtone (* (inc harmonic) frequency)]
+             (* envelope proportion (sin-osc overtone))))
+        partials (map-indexed proportional-partial harmonic-decay)
         whole (mix partials)]
     (detect-silence whole :action FREE)
     whole))
 
 ;(tone#)
 ;(beep#)
-;(bell#)
+;(bell# 300 20.0)
+;(bell# 300 20.0 0.0)
 ;(stop)
 
 
@@ -60,7 +61,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn play# [notes] 
-  (let [play-at# (fn [[ms midi]] (at ms (bell# (midi->hz midi) 3.0 0.3)))]
+  (let [play-at# (fn [[ms midi]] (at ms (bell# (midi->hz midi) 3.5)))]
     (->> notes (map play-at#) dorun)
     notes))
 
@@ -202,3 +203,4 @@
     (-> melody canone-alla-quarta play-now#)))
 
 ;(canon# (now) (bpm 90) (comp G major))
+;(stop)
