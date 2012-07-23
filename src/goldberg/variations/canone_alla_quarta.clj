@@ -17,8 +17,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst tone# [frequency 440] (sin-osc frequency))
-(definst beep# [frequency 440 duration 1000]
-  (let [envelope (env-gen (line 1.0 0 (/ duration 1000) FREE))]
+(definst beep# [frequency 440 duration 1.0]
+  (let [envelope (env-gen (line 1.0 0 duration FREE))]
           (* envelope (sin-osc frequency))))
 
 ;(tone#)
