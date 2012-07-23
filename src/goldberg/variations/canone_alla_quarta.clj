@@ -21,10 +21,10 @@
   (let [envelope (env-gen (line 1.0 0 (/ duration 1000) FREE))]
           (* envelope (sin-osc frequency))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Harmonics                                    ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;(tone#)
+;(beep#)
 
+; harmonics
 (definst bell# [frequency 300 duration 10.0 h0 1.0 h1 0.5 h2 0.4 h3 0.25 h4 0.20 h5 0.125]
   (let [harmonic-decay [h0 h1 h2 h3 h4 h5]
         proportional-partial
@@ -37,16 +37,18 @@
     (detect-silence whole :action FREE)
     whole))
 
-;(tone#)
-;(beep#)
-;(bell# 300 20.0)
-;(bell# 300 20.0 0.0)
-;(stop)
-
-
+;(bell#)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Well temperament                             ;;
+;; Psycho-acoustics                             ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;(bell# 300 20.0)
+;(bell# 300 20.0 0.0 0.0)
+;(stop)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Equal temperament                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn midi->hz [note]
@@ -55,10 +57,6 @@
       (java.lang.Math/pow 2.0 (/ note 12.0))))
 
 ;(midi->hz 69)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Melody                                       ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn play# [notes] 
   (let [play-at# (fn [[ms midi]] (at ms (bell# (midi->hz midi) 3.5)))]
@@ -70,9 +68,7 @@
         notes (map vector times pitches)]
     (play# notes)))
 
-
 ;(even-melody# (range 70 81))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Scale                                        ;;
@@ -99,14 +95,12 @@
     (comp start-from (start-from 60) major)
     (range)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Modes                                        ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+; alternative scales
 (def blues (scale [3 2 1 1 3 2]))
 (def pentatonic (scale [3 2 2 3 2]))
 (def chromatic (scale [1]))
 
+; modes
 (defn mode [scale n]
   (comp
     #(- % (scale n))
@@ -125,7 +119,7 @@
 ;)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Abstractions                                 ;;
+;; Melody                                       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn bpm [beats] (fn [beat] (-> beat (/ beats) (* 60) (* 1000))))
@@ -147,13 +141,6 @@
 (def repeats (partial mapcat #(apply repeat %)))
 (def runs (partial mapcat run))
 
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Melody                                       ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (def melody 
   (let [call
           [(repeats [[2 1/4] [1 1/2] [14 1/4] [1 3/2]])
@@ -174,10 +161,8 @@
        (accumulate (repeats [[21 1] [13 1/4]]))
        (concat (triples (runs [[-7 -10] [-12 -10]])) (run [5 -7])))))
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Canone alla quarta - Johann Sebastian Bach   ;;
+;; Canon                                        ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn canon [f] (fn [notes] (concat notes (f notes))))
@@ -186,12 +171,14 @@
 (defn skew [k f] (fn [points] (map #(update-in % [k] f) points))) 
 (defn shift [point] (fn [points] (map #(->> % (map + point) vec) points)))
 
+; flavours of canon
 (defn simple [wait] (shift [wait 0]))
 (defn interval [interval] (shift [0 interval]))
 (def mirror (skew pitch -))
 (def crab (skew timing -))
 (def table (comp mirror crab))
 
+; canone alla quarta
 (def canone-alla-quarta (canon (comp (interval -3) mirror (simple 3))))
 
 (defn canon# [start tempo scale]
