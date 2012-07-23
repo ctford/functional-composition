@@ -16,16 +16,16 @@
 ;; Sine waves                                   ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(definst tone# [frequency 440] (sin-osc frequency))
-(definst beep# [frequency 440 duration 1.0]
+(definst tone [frequency 440] (sin-osc frequency))
+(definst beep [frequency 440 duration 1.0]
   (let [envelope (env-gen (line 1.0 0 duration FREE))]
           (* envelope (sin-osc frequency))))
 
-;(tone#)
-;(beep#)
+;(tone)
+;(beep)
 
 ; harmonics
-(definst bell# [frequency 300 duration 10.0 h0 1.0 h1 0.5 h2 0.4 h3 0.25 h4 0.20 h5 0.125]
+(definst bell [frequency 300 duration 10.0 h0 1.0 h1 0.5 h2 0.4 h3 0.25 h4 0.20 h5 0.125]
   (let [harmonic-decay [h0 h1 h2 h3 h4 h5]
         proportional-partial
          (fn [harmonic proportion]
@@ -37,14 +37,14 @@
     (detect-silence whole :action FREE)
     whole))
 
-;(bell#)
+;(bell)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Psycho-acoustics                             ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;(bell# 300 20.0)
-;(bell# 300 20.0 0.0 0.0)
+;(bell 300 20.0)
+;(bell 300 20.0 0.0 0.0)
 ;(stop)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -58,17 +58,17 @@
 
 ;(midi->hz 69)
 
-(defn play# [notes] 
-  (let [play-at# (fn [[ms midi]] (at ms (bell# (midi->hz midi) 3.5)))]
-    (->> notes (map play-at#) dorun)
+(defn play [notes] 
+  (let [play-at (fn [[ms midi]] (at ms (bell# (midi->hz midi) 3.5)))]
+    (->> notes (map play-at) dorun)
     notes))
 
-(defn even-melody# [pitches]
+(defn even-melody [pitches]
   (let [times (reductions + (cons (now) (repeat 400)))
         notes (map vector times pitches)]
     (play# notes)))
 
-;(even-melody# (range 70 81))
+;(even-melody (range 70 81))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Scale                                        ;;
@@ -113,7 +113,7 @@
 
 (def minor aeolian)
 
-;(even-melody#
+;(even-melody
 ;  (let [_ -100]
 ;    (map (comp D major) [0 1 2 0, 0 1 2 0, 2 3 4 _, 2 3 4 _]))
 ;)
@@ -133,7 +133,7 @@
       (concat up-or-down (run tos)))
     [from]))
 
-;(even-melody# (map (comp G major)
+;(even-melody (map (comp G major)
 ;            (run [0 4 -1 0 1 0])
 ;            ))
 
@@ -181,13 +181,13 @@
 ; canone alla quarta
 (def canone-alla-quarta (canon (comp (interval -3) mirror (simple 3))))
 
-(defn canon# [start tempo scale]
+(defn canon [start tempo scale]
   (let [in-time (comp (shift [start 0]) (skew timing tempo))
         in-key (skew pitch scale)
-        play-now# (comp play# in-key in-time)]
+        play-now (comp play in-key in-time)]
 
-    (-> bass play-now#)
-    (-> melody canone-alla-quarta play-now#)))
+    (-> bass play-now)
+    (-> melody canone-alla-quarta play-now)))
 
-;(canon# (now) (bpm 90) (comp G major))
+;(canon (now) (bpm 90) (comp G major))
 ;(stop)
