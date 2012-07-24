@@ -59,14 +59,14 @@
 ;(midi->hz 69)
 
 (defn play [notes] 
-  (let [play-at (fn [[ms midi]] (at ms (bell# (midi->hz midi) 3.5)))]
+  (let [play-at (fn [[ms midi]] (at ms (bell (midi->hz midi) 3.5)))]
     (->> notes (map play-at) dorun)
     notes))
 
 (defn even-melody [pitches]
   (let [times (reductions + (cons (now) (repeat 400)))
         notes (map vector times pitches)]
-    (play# notes)))
+    (play notes)))
 
 ;(even-melody (range 70 81))
 
