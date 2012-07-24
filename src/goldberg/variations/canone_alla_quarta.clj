@@ -76,7 +76,7 @@
 ;(midi->hz 69)
 
 (defn play [notes] 
-  (let [play-at (fn [[ms midi]] (at ms (bell (midi->hz midi) 4.0 0.0)))]
+  (let [play-at (fn [[ms midi]] (at ms (bell (midi->hz midi) 3.5 0.1 0.6 0.0)))]
     (->> notes (map play-at) dorun)
     notes))
 
