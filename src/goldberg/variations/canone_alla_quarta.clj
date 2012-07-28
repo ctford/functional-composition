@@ -9,8 +9,7 @@
 (ns goldberg.variations.canone-alla-quarta
   (:use
     [clojure.repl]
-    [overtone.live :only
-      [metronome note mix detect-silence stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
+    [overtone.live :exclude [midi->hz sharp flat scale run pitch shift]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Sine waves                                   ;;
