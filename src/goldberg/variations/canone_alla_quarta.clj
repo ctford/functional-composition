@@ -10,7 +10,7 @@
   (:use
     [clojure.repl]
     [overtone.live :only
-      [mix detect-silence stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
+      [metronome note mix detect-silence stop at now definst sin-osc env-gen asr pluck line FREE perc]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Sine waves                                   ;;
@@ -146,6 +146,32 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Melody                                       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def row-row-row-your-boat
+  (let [named-pitches
+         [:C4 :C4 :C4 :D4 :E4
+          ; Row, row, row your boat,
+          :E4 :D4 :E4 :F4 :G4
+          ; Gently down the stream,
+          :C5 :C5 :C5 :G4 :G4 :G4 :E4 :E4 :E4 :C4 :C4 :C4
+          ; (take 4 (repeat "merrily"))
+          :G4 :F4 :E4 :D4 :C4]
+          ; Life is but a dream!
+        durations
+         [1 1 2/3 1/3 1
+          2/3 1/3 2/3 1/3 2
+          1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3
+          2/3 1/3 2/3 1/3 2]
+        midi-pitches (map note named-pitches)
+        times (reductions + 0 durations)]
+      (map vector times midi-pitches)))
+
+;row-row-row-your-boat
+;(play
+;  (map
+;    (fn [[beat midi]] [((metronome 90) beat) midi])
+;    row-row-row-your-boat)
+;)
 
 (defn bpm [beats] (fn [beat] (-> beat (/ beats) (* 60) (* 1000))))
 ;((bpm 120) 3)
