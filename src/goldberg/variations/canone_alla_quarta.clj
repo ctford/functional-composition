@@ -34,6 +34,7 @@
 
 ;(tone)
 ;(beep)
+;(stop)
 
 ; harmonics
 (definst bell [frequency 300 duration 10.0 h0 1.0 h1 0.5 h2 0.4 h3 0.25 h4 0.20 h5 0.125]
