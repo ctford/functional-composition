@@ -76,12 +76,16 @@
 ;(midi->hz 69)
 
 (defn play [notes] 
-  (let [play-at (fn [[ms midi]] (at ms (bell (midi->hz midi) 3.5 0.1 0.6 0.0 0.1 0.0 0.0)))]
+  (let [start (now)
+        play-at (fn [[ms midi]]
+                  (at
+                    (+ ms start)
+                    (bell (midi->hz midi) 3.5 0.1 0.6 0.0 0.1 0.0 0.0)))]
     (->> notes (map play-at) dorun)
     notes))
 
 (defn even-melody [pitches]
-  (let [times (reductions + (cons (now) (repeat 400)))
+  (let [times (reductions + (repeat 400))
         notes (map vector times pitches)]
     (play notes)))
 
@@ -166,15 +170,15 @@
         times (reductions + 0 durations)]
       (map vector times midi-pitches)))
 
+(defn bpm [beats] (fn [beat] (-> beat (/ beats) (* 60) (* 1000))))
+;((bpm 120) 3)
+
 ;row-row-row-your-boat
 ;(play
 ;  (map
-;    (fn [[beat midi]] [((metronome 90) beat) midi])
+;    (fn [[beat midi]] [((bpm 90) beat) midi])
 ;    row-row-row-your-boat)
 ;)
-
-(defn bpm [beats] (fn [beat] (-> beat (/ beats) (* 60) (* 1000))))
-;((bpm 120) 3)
 
 (defn run [[from & tos]]
   (if-let [to (first tos)]
@@ -221,6 +225,8 @@
 (defs [timing pitch] [0 1])
 (defn skew [k f] (fn [points] (map #(update-in % [k] f) points))) 
 (defn shift [point] (fn [points] (map #(->> % (map + point) vec) points)))
+(defn in-time [tempo] (skew timing tempo))
+(defn in-key [scale] (skew pitch scale))
 
 ; flavours of canon
 (defn simple [wait] (shift [wait 0]))
@@ -229,16 +235,20 @@
 (def crab (skew timing -))
 (def table (comp mirror crab))
 
-; canone alla quarta
+(defn => [value & fs] (reduce #(%2 %1) value fs))
+
+; round
+;(=> row-row-row-your-boat
+;    (in-time (bpm 90))
+;    (canon (simple 4))
+;    play)
+
+; canone alla quarta, by johann sebastian bach
 (def canone-alla-quarta (canon (comp (interval -3) mirror (simple 3))))
 
-(defn bach [start tempo scale]
-  (let [in-time (comp (shift [start 0]) (skew timing tempo))
-        in-key (skew pitch scale)
-        play-now (comp play in-key in-time)]
-
-    (-> bass play-now)
-    (-> melody canone-alla-quarta play-now)))
-
-;(bach (now) (bpm 90) (comp G major))
-;(stop)
+;(=> melody
+;    canone-alla-quarta
+;    #(concat bass %)
+;    (in-key (comp G major))
+;    (in-time (bpm 90))
+;    play)
