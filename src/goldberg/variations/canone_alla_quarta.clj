@@ -232,7 +232,7 @@
 ; canone alla quarta
 (def canone-alla-quarta (canon (comp (interval -3) mirror (simple 3))))
 
-(defn canon [start tempo scale]
+(defn bach [start tempo scale]
   (let [in-time (comp (shift [start 0]) (skew timing tempo))
         in-key (skew pitch scale)
         play-now (comp play in-key in-time)]
@@ -240,5 +240,5 @@
     (-> bass play-now)
     (-> melody canone-alla-quarta play-now)))
 
-;(canon (now) (bpm 90) (comp G major))
+;(bach (now) (bpm 90) (comp G major))
 ;(stop)
