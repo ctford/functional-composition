@@ -250,8 +250,8 @@
 
 ; round
 ;(=> row-row-row-your-boat
-;    (in-time (bpm 90))
 ;    (canon (simple 4))
+;    (in-time (bpm 90))
 ;    play)
 
 ; canone alla quarta, by johann sebastian bach
