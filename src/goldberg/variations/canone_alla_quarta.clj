@@ -119,6 +119,12 @@
 (def pentatonic (scale [3 2 2 3 2]))
 (def chromatic (scale [1]))
 
+;(even-melody
+;  (map
+;    (comp C major)
+;    (range 15))
+;)
+
 ; modes
 (defn mode [scale n]
   (comp
