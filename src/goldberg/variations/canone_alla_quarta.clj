@@ -28,11 +28,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst tone [frequency 440] (sin-osc frequency))
+(definst doubletone [freq1 300 freq2 300]
+  (+
+    (sin-osc freq1)
+    (sin-osc freq2)))
+
 (definst beep [frequency 440 duration 1.0]
   (let [envelope (env-gen (line 1.0 0 duration FREE))]
           (* envelope (sin-osc frequency))))
 
-;(tone)
+;(tone 300)
+;(doubletone 300 300)
 ;(beep)
 ;(stop)
 
