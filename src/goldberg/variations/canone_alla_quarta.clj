@@ -9,8 +9,8 @@
 (ns goldberg.variations.canone-alla-quarta
   (:use
     [clojure.repl]
-    [overtone.live :exclude [midi->hz sharp flat scale run pitch shift]]))
-
+    [overtone.live
+     :exclude [midi->hz sharp flat scale run pitch shift]]))
 
 
 
@@ -43,7 +43,8 @@
 ;(stop)
 
 ; harmonics
-(definst bell [frequency 300 duration 10.0 h0 0.8 h1 0.5 h2 0.3 h3 0.2 h4 0.2 h5 0.125]
+(definst bell [frequency 300 duration 10.0
+               h0 0.8 h1 0.5 h2 0.3 h3 0.2 h4 0.2 h5 0.125]
   (let [harmonics [1  2  3  4   5  6]
         decays    [h0 h1 h2 h3 h4 h5]
         volumes   [h0 h1 h2 h3 h4 h5]
@@ -67,7 +68,7 @@
 ;(bell 600 10.0)
 ;(bell 500 10.0 0.0)
 ;(bell 400 10.0 0.0 0.0)
-;(stop)
+
 
 
 
@@ -111,8 +112,6 @@
 
 ;(even-melody (range 70 81))
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Scale                                        ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -127,9 +126,10 @@
 (defn sum-n [series n] (reduce + (take n series)))
 
 (defn scale [intervals]
-  #(if-not (neg? %)
-     (sum-n (cycle intervals) %)
-     ((comp - (scale (reverse intervals)) -) %)))
+  (fn [degree]
+    (if-not (neg? degree)
+      (sum-n (cycle intervals) degree)
+      ((comp - (scale (reverse intervals)) -) degree))))
 
 (def major (scale [2 2 1 2 2 2 1]))
 
@@ -190,10 +190,11 @@
         times (reductions + 0 durations)]
       (map vector times midi-pitches)))
 
+;row-row-row-your-boat
+
 (defn bpm [beats] (fn [beat] (-> beat (/ beats) (* 60) (* 1000))))
 ;((bpm 120) 3)
 
-;row-row-row-your-boat
 ;(play
 ;  (map
 ;    (fn [[beat midi]] [((bpm 90) beat) midi])
@@ -209,10 +210,11 @@
     [from]))
 
 ;(even-melody (map (comp G major)
-;            (run [0 4 -1 0 1 0])
+;            (run [0 4 -1 1 0])
 ;            ))
 
-(defn accumulate [series] (map (partial sum-n series) (range (count series))))
+(defn accumulate [series]
+  (map (partial sum-n series) (range (count series))))
 (def repeats (partial mapcat #(apply repeat %)))
 (def runs (partial mapcat run))
 
@@ -224,8 +226,10 @@
           [(repeats [[10 1/4] [1 1/2] [2 1/4] [1 9/4]])
           (runs [[7 -1 0] [0 -3]])]
         development
-          [(repeats [[1 3/4] [12 1/4] [1 1/2] [1 1] [1 1/2] [12 1/4] [1 3]])
-          (runs [[4] [4] [2 -3] [-1 -2] [0] [3 5] [1] [1] [1 2] [-1 1 -1] [5 0]])]
+          [(repeats [[1 3/4] [12 1/4] [1 1/2] [1 1] [1 1/2]
+                 [12 1/4] [1 3]])
+          (runs [[4] [4] [2 -3] [-1 -2] [0] [3 5] [1] [1] [1 2]
+                 [-1 1 -1] [5 0]])]
         [durations pitches] (map concat call response development)
         timings (map (partial + 1/2) (accumulate durations))]
     (map vector timings pitches)))
@@ -234,7 +238,9 @@
   (let [triples (partial mapcat #(repeat 3 %))]
     (map vector
        (accumulate (repeats [[21 1] [13 1/4]]))
-       (concat (triples (runs [[-7 -10] [-12 -10]])) (runs [[5 0] [6 0]])))))
+       (concat
+         (triples (runs [[-7 -10] [-12 -10]]))
+         (runs [[5 0] [6 0]])))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Canon                                        ;;
@@ -243,8 +249,8 @@
 (defn canon [f] (fn [notes] (concat notes (f notes))))
 
 (defs [timing pitch] [0 1])
-(defn skew [k f] (fn [points] (map #(update-in % [k] f) points))) 
-(defn shift [point] (fn [points] (map #(->> % (map + point) vec) points)))
+(defn skew [k f] (fn [notes] (map #(update-in % [k] f) notes))) 
+(defn shift [point] (fn [notes] (map #(->> % (map + point) vec) notes)))
 (defn in-time [tempo] (skew timing tempo))
 (defn in-key [scale] (skew pitch scale))
 
@@ -264,7 +270,12 @@
 ;    play)
 
 ; canone alla quarta, by johann sebastian bach
-(def canone-alla-quarta (canon (comp (interval -3) mirror (simple 3))))
+(def canone-alla-quarta
+  (canon
+    (comp
+      (interval -3)
+      mirror
+      (simple 3))))
 
 ;(=> melody
 ;    canone-alla-quarta
