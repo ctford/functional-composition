@@ -44,18 +44,20 @@
 
 ; harmonics
 (definst bell [frequency 300 duration 10.0 h0 1.0 h1 0.5 h2 0.4 h3 0.25 h4 0.20 h5 0.125]
-  (let [harmonic-decay [h0 h1 h2 h3 h4 h5]
+  (let [harmonic-progression [1 2 3 4 5 6]
+        harmonic-decay [h0 h1 h2 h3 h4 h5]
         proportional-partial
          (fn [harmonic proportion]
            (let [envelope (env-gen (perc 0.01 (* duration proportion)))
-                 overtone (* (inc harmonic) frequency)]
+                 overtone (* harmonic frequency)]
              (* envelope proportion (sin-osc overtone))))
-        partials (map-indexed proportional-partial harmonic-decay)
+        partials (map proportional-partial harmonic-progression harmonic-decay)
         whole (mix partials)]
     (detect-silence whole :action FREE)
     whole))
 
 ;(bell)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Psycho-acoustics                             ;;
@@ -93,12 +95,11 @@
 
 ;(midi->hz 69)
 
+(defn ding! [midi] (bell (midi->hz midi) 2.5 0.8 0.3 0.1 0.2 0.05 0.05))
+
 (defn play [notes] 
   (let [start (now)
-        play-at (fn [[ms midi]]
-                  (at
-                    (+ ms start)
-                    (bell (midi->hz midi) 3.5 0.1 0.6 0.0 0.1 0.0 0.0)))]
+        play-at (fn [[ms midi]] (at (+ ms start) (ding! midi)))]
     (->> notes (map play-at) dorun)
     notes))
 
