@@ -43,8 +43,8 @@
 ;(stop)
 
 ; harmonics
-(definst bell [frequency 300 duration 10.0 h0 1.0 h1 0.6 h2 0.4 h3 0.25 h4 0.20 h5 0.125]
-  (let [harmonics [ 1  2  3  4  5  6]
+(definst bell [frequency 300 duration 10.0 h0 0.8 h1 0.5 h2 0.3 h3 0.2 h4 0.2 h5 0.125]
+  (let [harmonics [1  2  3  4   5  6]
         decays    [h0 h1 h2 h3 h4 h5]
         volumes   [h0 h1 h2 h3 h4 h5]
         proportional-partial
@@ -234,7 +234,7 @@
   (let [triples (partial mapcat #(repeat 3 %))]
     (map vector
        (accumulate (repeats [[21 1] [13 1/4]]))
-       (concat (triples (runs [[-7 -10] [-12 -10]])) (run [5 -7])))))
+       (concat (triples (runs [[-7 -10] [-12 -10]])) (runs [[5 0] [6 0]])))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Canon                                        ;;
