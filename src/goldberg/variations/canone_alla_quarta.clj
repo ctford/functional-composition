@@ -43,15 +43,15 @@
 ;(stop)
 
 ; harmonics
-(definst bell [frequency 300 duration 10.0
-               h0 0.8 h1 0.5 h2 0.3 h3 0.2 h4 0.2 h5 0.125]
+(definst bell [frequency 300 duration 10
+               h0 1 h1 0.6 h2 0.4 h3 0.25 h4 0.2 h5 0.15]
   (let [harmonics   [ 1  2  3  4  5  6]
         proportions [h0 h1 h2 h3 h4 h5]
         proportional-partial
          (fn [harmonic proportion]
            (let [envelope (env-gen (perc 0.01 (* proportion duration)))
                  overtone (* harmonic frequency)]
-             (* proportion envelope (sin-osc overtone))))
+             (* 1/2 proportion envelope (sin-osc overtone))))
         partials (map proportional-partial harmonics proportions)
         whole (mix partials)]
     (detect-silence whole :action FREE)
@@ -92,11 +92,11 @@
 (defn midi->hz [note]
     (*
       8.1757989156 ; midi zero
-      (java.lang.Math/pow 2.0 (/ note 12.0))))
+      (java.lang.Math/pow 2 (/ note 12))))
 
 ;(midi->hz 69)
 
-(defn ding! [midi] (bell (midi->hz midi) 3.0))
+(defn ding! [midi] (bell (midi->hz midi) 3))
 
 (defn play [notes] 
   (let [start (now)
