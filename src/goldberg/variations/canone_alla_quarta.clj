@@ -45,15 +45,14 @@
 ; harmonics
 (definst bell [frequency 300 duration 10.0
                h0 0.8 h1 0.5 h2 0.3 h3 0.2 h4 0.2 h5 0.125]
-  (let [harmonics [1  2  3  4   5  6]
-        decays    [h0 h1 h2 h3 h4 h5]
-        volumes   [h0 h1 h2 h3 h4 h5]
+  (let [harmonics   [ 1  2  3  4  5  6]
+        proportions [h0 h1 h2 h3 h4 h5]
         proportional-partial
-         (fn [harmonic volume decay]
-           (let [envelope (env-gen (perc 0.01 (* duration decay)))
+         (fn [harmonic proportion]
+           (let [envelope (env-gen (perc 0.01 (* proportion duration)))
                  overtone (* harmonic frequency)]
-             (* decay envelope (sin-osc overtone))))
-        partials (map proportional-partial harmonics volumes decays)
+             (* proportion envelope (sin-osc overtone))))
+        partials (map proportional-partial harmonics proportions)
         whole (mix partials)]
     (detect-silence whole :action FREE)
     whole))
