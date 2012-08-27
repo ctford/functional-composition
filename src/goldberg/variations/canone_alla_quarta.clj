@@ -33,8 +33,8 @@
     (sin-osc freq1)
     (sin-osc freq2)))
 
-(definst beep [frequency 440 duration 1.0]
-  (let [envelope (env-gen (line 1.0 0 duration FREE))]
+(definst beep [frequency 440 duration 1]
+  (let [envelope (line 1 0 duration :action FREE)]
           (* envelope (sin-osc frequency))))
 
 ;(tone 300)
