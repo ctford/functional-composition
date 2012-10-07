@@ -99,16 +99,15 @@
 
 (defn ding! [midi] (bell (midi->hz midi) 3))
 
-(defn play [notes] 
+(defn play! [notes] 
   (let [start (now)
-        play-at (fn [[ms midi]] (at (+ ms start) (ding! midi)))]
-    (->> notes (map play-at) dorun)
-    notes))
+        play-at! (fn [[ms midi]] (at (+ ms start) (ding! midi)))]
+    (->> notes (map play-at!) doall)))
 
 (defn even-melody [pitches]
   (let [times (reductions + (repeat 400))
         notes (map vector times pitches)]
-    (play notes)))
+    (play! notes)))
 
 ;(even-melody (range 70 81))
 
@@ -196,7 +195,7 @@
 (defn bpm [beats] (fn [beat] (-> beat (/ beats) (* 60) (* 1000))))
 ;((bpm 120) 3)
 
-;(play
+;(play!
 ;  (map
 ;    (fn [[beat degree]]
 ;      [((bpm 90) beat) ((comp C major) degree)])
@@ -248,41 +247,36 @@
 ;; Canon                                           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn canon [f] (fn [notes] (concat notes (f notes))))
+(defn canon [f notes] (concat notes (f notes)))
 
 (defs [timing pitch] [0 1])
-(defn skew [k f] (fn [notes] (map #(update-in % [k] f) notes))) 
-(defn shift [point] (fn [notes] (map #(->> % (map + point) vec) notes)))
-(defn in-time [tempo] (skew timing tempo))
-(defn in-key [scale] (skew pitch scale))
+(defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
+(defn in-time [tempo notes] (->> notes (where timing tempo)))
+(defn in-key [scale notes] (->> notes (where pitch scale)))
 
 ; flavours of canon
-(defn simple [wait] (shift [wait 0]))
-(defn interval [interval] (shift [0 interval]))
-(def mirror (skew pitch -))
-(def crab (skew timing -))
+(defn simple [wait notes] (->> notes (where timing #(+ % wait))))
+(defn interval [interval notes] (->> notes (where pitch #(+ % interval))))
+(defn mirror [notes] (->> notes (where pitch -)))
+(defn crab [notes] (->> notes (where timing -)))
 (def table (comp mirror crab))
 
-(defn => [value & fs] (reduce #(%2 %1) value fs))
-
 ; round
-;(=> row-row-row-your-boat
-;    (canon (simple 4))
-;    (in-key (comp C major))
-;    (in-time (bpm 90))
-;    play)
+;(->> row-row-row-your-boat
+;  (canon (partial simple 4))
+;  (in-key (comp C major))
+;  (in-time (bpm 90))
+;  play!)
 
 ; canone alla quarta, by johann sebastian bach
-(def canone-alla-quarta
+(defn canone-alla-quarta [notes]
   (canon
-    (comp
-      (interval -3)
-      mirror
-      (simple 3))))
+    (comp (partial interval -3) mirror (partial simple 3))
+    notes))
 
-;(=> melody
-;    canone-alla-quarta
-;    #(concat bass %)
-;    (in-key (comp G major))
-;    (in-time (bpm 90))
-;    play)
+;(->> melody
+;  canone-alla-quarta
+;  (concat bass)
+;  (in-key (comp G major))
+;  (in-time (bpm 90))
+;  play!)
