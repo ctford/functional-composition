@@ -272,7 +272,7 @@
 ; canone alla quarta, by johann sebastian bach
 (defn canone-alla-quarta [notes]
   (canon
-    (comp (partial interval -3) mirror (partial simple 3))
+    #(->> % (simple 3) mirror (interval -3))
     notes))
 
 ;(->> melody
