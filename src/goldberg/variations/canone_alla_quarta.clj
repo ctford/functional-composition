@@ -101,8 +101,9 @@
 
 (defn play! [notes] 
   (let [start (now)
-        play-at! (fn [[ms midi]] (at (+ ms start) (ding! midi)))]
-    (->> notes (map play-at!) doall)))
+        play-note! (fn [[ms midi]] (at (+ ms start) (ding! midi)))]
+    (doseq [note notes] (play-note! note))
+    notes))
 
 (defn even-melody [pitches]
   (let [times (reductions + (repeat 400))
