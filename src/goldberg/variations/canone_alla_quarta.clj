@@ -9,10 +9,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns goldberg.variations.canone-alla-quarta
-  (:use
-    [clojure.repl]
-    [overtone.live
-     :exclude [midi->hz sharp flat scale run pitch shift]]))
+  (:use [overtone.live
+         :only [definst sin-osc mix at now line
+                FREE env-gen perc detect-silence]]))
+
 
 
 
