@@ -28,7 +28,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst tone [frequency 440] (sin-osc frequency))
-(definst doubletone [freq1 300 freq2 300]
+(definst doubletone [freq1 440 freq2 440]
   (+
     (sin-osc freq1)
     (sin-osc freq2)))
@@ -43,10 +43,10 @@
 ;(stop)
 
 ; harmonics
-(definst bell [frequency 300 duration 10
+(definst bell [frequency 440 duration 10
                h0 1 h1 0.6 h2 0.4 h3 0.25 h4 0.2 h5 0.15]
-  (let [harmonics   [ 1  2  3  4  5  6]
-                   ;[ 1  2  3  4.2  5.4  6.8] - more realistic timbre
+  (let [harmonics  [ 1  2  3  4   5   6  ]
+                  ;[ 1  2  3  4.2 5.4 6.8] ; more realistic timbre
         proportions [h0 h1 h2 h3 h4 h5]
         proportional-partial
          (fn [harmonic proportion]
