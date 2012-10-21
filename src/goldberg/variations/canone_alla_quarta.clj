@@ -11,7 +11,8 @@
 (ns goldberg.variations.canone-alla-quarta
   (:use [overtone.live
          :only [definst sin-osc mix at now line
-                FREE env-gen perc detect-silence]]))
+                FREE env-gen perc detect-silence]]
+        [quil.core :exclude [scale line]]))
 
 
 
