@@ -100,10 +100,10 @@
 (defn ding! [midi] (bell (midi->hz midi) 3))
 
 (defn play! [notes] 
-  (let [start (now)
-        play-note! (fn [[ms midi]] (at (+ ms start) (ding! midi)))]
-    (doseq [note notes] (play-note! note))
-    notes))
+  (let [start (now)]
+    (doseq [[ms midi] notes]
+      (at (+ ms start) (ding! midi))))
+  notes)
 
 (defn even-melody [pitches]
   (let [times (reductions + (repeat 400))
