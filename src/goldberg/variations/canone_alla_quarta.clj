@@ -277,26 +277,30 @@
     notes))
 
 (defn graph! [title points]
-  (sketch 
-    :title title
-    :setup (fn []
-             (smooth)
-             (frame-rate 1)
-             (background 200))  
-    :draw  (fn []
-             (stroke 100)
-             (stroke-weight 5)
-             (fill 50)
-             (doseq [[x y] points]
-               (ellipse (* (width) x) (* (height) y) 10 10))) 
-    :size [800 600]))
+  (let [normalised (->> points
+                     (where timing #(/ % 30))
+                     (where pitch #(/ (+ (* -1 %) 10) 20)))]
+    (sketch 
+      :title title
+      :setup (fn []
+               (smooth)
+               (frame-rate 1)
+               (background 200))  
+      :draw  (fn []
+               (stroke 100)
+               (stroke-weight 5)
+               (fill 50)
+               (doseq [[x y] normalised]
+                 (ellipse (* (width) x) (* (height) y) 10 10))) 
+      :size [800 600])
+    points))
 
 ;(->> melody
 ;  canone-alla-quarta
 ;  (concat bass)
+;  (graph! "Time vs pitch")
 ;  (in-key (comp G major))
 ;  (in-time (bpm 90))
 ;  play!
-;  (graph! "Time vs pitch")
-;  )
+  )
 
