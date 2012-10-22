@@ -276,9 +276,33 @@
     #(->> % (simple 3) mirror (interval -3))
     notes))
 
+(defn graph! [title notes]
+  (sketch 
+    :title title
+    :setup (fn []
+             (smooth)
+             (frame-rate 1)
+             (background 200))  
+    :draw  (fn []
+             (stroke (random 255))
+             (stroke-weight (random 10))
+             (fill (random 255))   
+             (let [normalise (fn [value d-min d-max r-max] 
+                    (-> value (- d-min) (/ (- d-max d-min)) (* r-max)))
+                   draw (fn [[timing pitch]]
+                          (ellipse
+                            (normalise timing (min-key 0 notes) (max-key timing notes) 800)
+                            (normalise pitch (min-key 1 notes) (max-key timing notes) 600)
+                            50 50))]  
+               (doseq [note notes] (draw note))))
+    :size [800 600]))
+
 ;(->> melody
 ;  canone-alla-quarta
 ;  (concat bass)
 ;  (in-key (comp G major))
 ;  (in-time (bpm 90))
-;  play!)
+;  play!
+;  (graph! "Time vs pitch")
+;  )
+
