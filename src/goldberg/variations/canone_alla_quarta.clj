@@ -276,7 +276,7 @@
     #(->> % (simple 3) mirror (interval -3))
     notes))
 
-(defn graph! [title notes]
+(defn graph! [title points]
   (sketch 
     :title title
     :setup (fn []
@@ -284,17 +284,11 @@
              (frame-rate 1)
              (background 200))  
     :draw  (fn []
-             (stroke (random 255))
-             (stroke-weight (random 10))
-             (fill (random 255))   
-             (let [normalise (fn [value d-min d-max r-max] 
-                    (-> value (- d-min) (/ (- d-max d-min)) (* r-max)))
-                   draw (fn [[timing pitch]]
-                          (ellipse
-                            (normalise timing (min-key 0 notes) (max-key timing notes) 800)
-                            (normalise pitch (min-key 1 notes) (max-key timing notes) 600)
-                            50 50))]  
-               (doseq [note notes] (draw note))))
+             (stroke 100)
+             (stroke-weight 5)
+             (fill 50)
+             (doseq [[x y] points]
+               (ellipse (* (width) x) (* (height) y) 10 10))) 
     :size [800 600]))
 
 ;(->> melody
