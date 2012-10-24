@@ -10,7 +10,7 @@
 
 (ns goldberg.variations.canone-alla-quarta
   (:use [overtone.live
-         :only [definst sin-osc mix at now line
+         :only [definst sin-osc mix at now line stop
                 FREE env-gen perc detect-silence]]
         [quil.core :exclude [scale line]]))
 
@@ -101,9 +101,8 @@
 (defn ding! [midi] (bell (midi->hz midi) 3))
 
 (defn play! [notes] 
-  (let [start (now)]
-    (doseq [[ms midi] notes]
-      (at (+ ms start) (ding! midi))))
+  (doseq [[ms midi] notes]
+    (at ms (ding! midi)))
   notes)
 
 (defn even-melody [pitches]
@@ -277,30 +276,34 @@
     notes))
 
 (defn graph! [title points]
-  (let [normalised (->> points
-                     (where timing #(/ % 30))
-                     (where pitch #(/ (+ (* -1 %) 10) 20)))]
+    (let [
+      start (now)
+      normalise (fn [end] (->> points
+        (filter #(< (% timing) end))
+        (where timing #(- % start))
+        (where timing #(/ % 50000))
+        (where pitch #(- % 45))
+        (where pitch #(/ % 40))))]
     (sketch 
       :title title
       :setup (fn []
                (smooth)
-               (frame-rate 1)
+               (frame-rate 60)
                (background 200))  
       :draw  (fn []
                (stroke 100)
                (stroke-weight 5)
                (fill 50)
-               (doseq [[x y] normalised]
+               (doseq [[x y] (normalise (now))]
                  (ellipse (* (width) x) (* (height) y) 10 10))) 
-      :size [800 600])
-    points))
+      :size [1000 700])))
 
 ;(->> melody
 ;  canone-alla-quarta
 ;  (concat bass)
-;  (graph! "Time vs pitch")
 ;  (in-key (comp G major))
 ;  (in-time (bpm 90))
+;  (where timing #(+ (now) %))
 ;  play!
-  )
-
+;  (graph! "Time vs pitch")
+;  )
