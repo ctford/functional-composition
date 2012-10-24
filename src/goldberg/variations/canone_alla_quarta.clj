@@ -46,8 +46,8 @@
 ; harmonics
 (definst bell [frequency 440 duration 10
                h0 1 h1 0.6 h2 0.4 h3 0.25 h4 0.2 h5 0.15]
-  (let [harmonics  [ 1  2  3  4   5   6  ]
-                  ;[ 1  2  3  4.2 5.4 6.8] ; more realistic timbre
+  (let [harmonics ; [ 1  2  3  4   5   6  ]
+                  [ 1  2  3  4.2 5.4 6.8] ; more realistic timbre
         proportions [h0 h1 h2 h3 h4 h5]
         proportional-partial
          (fn [harmonic proportion]
@@ -105,10 +105,11 @@
     (at ms (ding! midi)))
   notes)
 
+(defs [timing pitch] [0 1])
 (defn even-melody [pitches]
   (let [times (reductions + (repeat 400))
         notes (map vector times pitches)]
-    (play! notes)))
+    (->> notes (where timing #(+ (now) %)) play!)))
 
 ;(even-melody (range 70 81))
 
@@ -199,9 +200,8 @@
 ;(play!
 ;  (map
 ;    (fn [[beat degree]]
-;      [((bpm 90) beat) ((comp C major) degree)])
-;    row-row-row-your-boat)
-;)
+;      [((comp (start-from (now)) (bpm 90)) beat) ((comp C major) degree)])
+;    row-row-row-your-boat))
 
 (defn run [[from & tos]]
   (if-let [to (first tos)]
@@ -250,14 +250,17 @@
 
 (defn canon [f notes] (concat notes (f notes)))
 
-(defs [timing pitch] [0 1])
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
-(defn in-time [tempo notes] (->> notes (where timing tempo)))
+(defn in-time [tempo notes]
+  (->> notes
+    (where timing tempo)
+    (where timing (start-from (now)))))
+
 (defn in-key [scale notes] (->> notes (where pitch scale)))
 
 ; flavours of canon
-(defn simple [wait notes] (->> notes (where timing #(+ % wait))))
-(defn interval [interval notes] (->> notes (where pitch #(+ % interval))))
+(defn simple [wait notes] (->> notes (where timing (start-from wait))))
+(defn interval [interval notes] (->> notes (where pitch (start-from interval))))
 (defn mirror [notes] (->> notes (where pitch -)))
 (defn crab [notes] (->> notes (where timing -)))
 (def table (comp mirror crab))
@@ -276,7 +279,7 @@
     notes))
 
 (defn graph! [title points]
-    (let [
+  (let [
       start (now)
       normalise (fn [end] (->> points
         (filter #(< (% timing) end))
@@ -296,14 +299,14 @@
                (fill 50)
                (doseq [[x y] (normalise (now))]
                  (ellipse (* (width) x) (* (height) y) 10 10))) 
-      :size [1000 700])))
+      :size [1000 700]))
+  points)
 
 ;(->> melody
 ;  canone-alla-quarta
 ;  (concat bass)
 ;  (in-key (comp G major))
 ;  (in-time (bpm 90))
-;  (where timing #(+ (now) %))
-;  play!
 ;  (graph! "Time vs pitch")
+;  play!
 ;  )
