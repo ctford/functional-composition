@@ -102,6 +102,7 @@
 
 (defn note [timing pitch] {:time timing :pitch pitch}) 
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
+(def is constantly)
 
 (defn play! [notes] 
   (let [scheduled-notes (->> notes (where :time (from (now))))]
@@ -260,7 +261,7 @@
   (canon
     (fn [notes] (->> notes 
        (simple 3) mirror (interval -3)
-       (where :voice (constantly :follower)))
+       (where :voice (is :follower)))
     notes))
 
 (defn graph! [title points]
@@ -292,9 +293,9 @@
       :size [800 600])
     points))
 
-;(->> (where :voice (constantly :leader) melody)
+;(->> (where :voice (is :leader) melody)
 ;  canone-alla-quarta
-;  (concat (where :voice (constantly :bass) bass))
+;  (concat (where :voice (is :bass) bass))
 ;  (where :pitch (comp G major))
 ;  (where :time (bpm 90))
 ;  play!
