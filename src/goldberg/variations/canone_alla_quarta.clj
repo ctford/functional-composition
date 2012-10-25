@@ -241,7 +241,7 @@
 (defn canon [f notes] (concat notes (f notes)))
 
 ; flavours of canon
-(defn simple [wait notes] (->> notes (where :time (from wait))))
+(defn simple [lag notes] (->> notes (where :time (from lag))))
 (defn interval [interval notes] (->> notes (where :pitch (from interval))))
 (defn mirror [notes] (->> notes (where :pitch -)))
 (defn crab [notes] (->> notes (where :time -)))
@@ -258,7 +258,9 @@
 ; canone alla quarta, by johann sebastian bach
 (defn canone-alla-quarta [notes]
   (canon
-    #(->> % (simple 3) mirror (interval -3) (where :part (constantly :comes)))
+    (fn [notes] (->> notes 
+       (simple 3) mirror (interval -3)
+       (where :part (constantly :comes)))
     notes))
 
 (defn graph! [title points]
