@@ -144,6 +144,7 @@
 (defs [sharp flat] [inc dec])
 
 ; alternative scales
+(def minor (scale [2 1 2 2 1 2 2]))
 (def blues (scale [3 2 1 1 3 2]))
 (def pentatonic (scale [3 2 2 3 2]))
 (def chromatic (scale [1]))
@@ -153,19 +154,6 @@
 ;    (comp C major)
 ;    (range 15))
 ;)
-
-; modes
-(defn mode [scale n]
-  (comp
-    #(- % (scale n))
-    scale
-    (from n)))
-
-(defs
-  [ionian dorian phrygian lydian mixolydian aeolian locrian]
-  (map (partial mode major) (range)))
-
-(def minor aeolian)
 
 ;(even-melody
 ;  (let [_ -100]
