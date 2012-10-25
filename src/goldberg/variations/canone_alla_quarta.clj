@@ -295,16 +295,11 @@
                                
     (sketch 
       :title title
-      :setup (fn []
-               (smooth)
-               (frame-rate 6)
-               (background 200))  
+      :setup (fn [] (smooth) (frame-rate 6) (background 200))  
       :draw  (fn []
                (let [colours (fnil {:dux 50, :comes 100, :bass 150} :dux)]
-                 (stroke-weight 5)
-                 (fill 50)
                  (doseq [{x :time y :pitch part :part} (->> points (past (now)) normalise)]
-                   (stroke (colours part))
+                   (stroke-weight 5) (fill 50) (stroke (colours part))
                    (ellipse (* (width) x) (- (* 2/3 (height)) (* (/ (height) 3) y)) 10 10)))) 
       :size [800 600])
     points))
