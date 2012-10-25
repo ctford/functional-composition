@@ -100,6 +100,8 @@
 
 (defn ding! [midi] (bell (midi->hz midi) 3))
 
+(defn note [timing pitch] {:time timing :pitch pitch}) 
+
 (defn play! [notes] 
   (doseq [{ms :time midi :pitch} notes]
     (at ms (ding! midi)))
@@ -108,7 +110,7 @@
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
 (defn even-melody [pitches]
   (let [times (reductions + (repeat 400))
-        notes (map #(zipmap [:time :pitch] [%1 %2]) times pitches)]
+        notes (map note times pitches)]
     (->> notes (where :time (from (now))) play!)))
 
 ;(even-melody (range 70 81))
@@ -190,7 +192,7 @@
           1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3
           2/3 1/3 2/3 1/3 2]
         times (reductions + 0 durations)]
-      (map #(zipmap [:time :pitch] [%1 %2]) times pitches)))
+      (map note times pitches)))
 
 ;row-row-row-your-boat
 
@@ -233,12 +235,12 @@
           (runs [[4] [4] [2 -3] [-1 -2] [0] [3 5] [1] [1] [1 2]
                  [-1 1 -1] [5 0]])]
         [durations pitches] (map concat call response development)
-        timings (map (partial + 1/2) (accumulate durations))]
-    (map #(zipmap [:time :pitch] [%1 %2]) timings pitches)))
+        times (map (from 1/2) (accumulate durations))]
+    (map note times pitches)))
 
 (def bass
   (let [triples (partial mapcat #(repeat 3 %))]
-    (map #(zipmap [:time :pitch] [%1 %2]) 
+    (map note
        (accumulate (repeats [[21 1] [13 1/4]]))
        (concat
          (triples (runs [[-7 -10] [-12 -10]]))
