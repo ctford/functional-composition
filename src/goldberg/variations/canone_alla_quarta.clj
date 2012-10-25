@@ -109,7 +109,7 @@
 (defn even-melody [pitches]
   (let [times (reductions + (repeat 400))
         notes (map #(zipmap [:time :pitch] [%1 %2]) times pitches)]
-    (->> notes (where :time #(+ (now) %)) play!)))
+    (->> notes (where :time (from (now))) play!)))
 
 ;(even-melody (range 70 81))
 
