@@ -105,11 +105,11 @@
     (at ms (ding! midi)))
   notes)
 
-(defs [timing pitch] [0 1])
+(defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
 (defn even-melody [pitches]
   (let [times (reductions + (repeat 400))
         notes (map vector times pitches)]
-    (->> notes (where timing #(+ (now) %)) play!)))
+    (->> notes (where 0 #(+ (now) %)) play!)))
 
 ;(even-melody (range 70 81))
 
@@ -197,6 +197,7 @@
 (defn bpm [beats] (fn [beat] (-> beat (/ beats) (* 60) (* 1000))))
 ;((bpm 120) 3)
 
+(defs [timing pitch] [0 1])
 ;(play!
 ;  (map
 ;    (fn [[beat degree]]
@@ -250,7 +251,6 @@
 
 (defn canon [f notes] (concat notes (f notes)))
 
-(defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
 (defn in-time [tempo notes]
   (->> notes
     (where timing tempo)
@@ -281,12 +281,19 @@
 (defn graph! [title points]
   (let [
       start (now)
-      normalise (fn [end] (->> points
-        (filter #(< (% timing) end))
-        (where timing #(- % start))
-        (where timing #(/ % 50000))
-        (where pitch #(- % 45))
-        (where pitch #(/ % 40))))]
+      most (fn [member comparison] (->> points (map #(% member)) (apply comparison)))
+      max-x (most timing max)
+      min-x (most timing min)
+      max-y (most pitch max)
+      min-y (most pitch min)
+      past (fn [end points] (filter #(< (% timing) end) points))
+      normalise (fn [points] (->> points
+        (where timing (start-from (- min-x)))
+        (where pitch (start-from (- min-y)))
+        (where timing #(/ % (- max-x min-x)))
+        (where pitch #(/ % (- max-y min-y)))
+                               ))]
+                               
     (sketch 
       :title title
       :setup (fn []
@@ -297,16 +304,15 @@
                (stroke 100)
                (stroke-weight 5)
                (fill 50)
-               (doseq [[x y] (normalise (now))]
+               (doseq [[x y] (->> points (past (now)) normalise)]
                  (ellipse (* (width) x) (* (height) y) 10 10))) 
-      :size [1000 700]))
-  points)
+      :size [1000 700])
+    points))
 
 ;(->> melody
 ;  canone-alla-quarta
 ;  (concat bass)
 ;  (in-key (comp G major))
-;  (in-time (bpm 90))
+;  (in-time (bpm 20))
 ;  (graph! "Time vs pitch")
-;  play!
-;  )
+;  play!)
