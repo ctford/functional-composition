@@ -122,7 +122,7 @@
            (fn [name value] `(def ~name ~value))
            names (eval values))))
 
-(defn start-from [base] (partial + base))
+(defn from [base] (partial + base))
 (defn sum-n [series n] (reduce + (take n series)))
 
 (defn scale [intervals]
@@ -136,7 +136,7 @@
 (def C (start-from 60))
 (defs [D E F G A B]
   (map
-    (comp start-from C major inc)
+    (comp from C major inc)
     (range)))
 
 (defs [sharp flat] [inc dec])
@@ -157,7 +157,7 @@
   (comp
     #(- % (scale n))
     scale
-    (start-from n)))
+    (from n)))
 
 (defs
   [ionian dorian phrygian lydian mixolydian aeolian locrian]
@@ -200,7 +200,7 @@
 ;(play!
 ;  (map
 ;    (fn [[beat degree]]
-;      [((comp (start-from (now)) (bpm 90)) beat) ((comp C major) degree)])
+;      [((comp (from (now)) (bpm 90)) beat) ((comp C major) degree)])
 ;    row-row-row-your-boat))
 
 (defn run [[from & tos]]
@@ -253,11 +253,11 @@
 (defn in-time [tempo notes]
   (->> notes
     (where :time tempo)
-    (where :time (start-from (now)))))
+    (where :time (from (now)))))
 
 ; flavours of canon
-(defn simple [wait notes] (->> notes (where :time (start-from wait))))
-(defn interval [interval notes] (->> notes (where :pitch (start-from interval))))
+(defn simple [wait notes] (->> notes (where :time (from wait))))
+(defn interval [interval notes] (->> notes (where :pitch (from interval))))
 (defn mirror [notes] (->> notes (where :pitch -)))
 (defn crab [notes] (->> notes (where :time -)))
 (def table (comp mirror crab))
@@ -286,8 +286,8 @@
       min-y (most :pitch min)
       past (fn [end points] (filter #(< (:time %) end) points))
       normalise (fn [points] (->> points
-        (where :time (start-from (- min-x)))
-        (where :pitch (start-from (- min-y)))
+        (where :time (from (- min-x)))
+        (where :pitch (from (- min-y)))
         (where :time #(/ % (- max-x min-x)))
         (where :pitch #(/ % (- max-y min-y)))))]
                                
