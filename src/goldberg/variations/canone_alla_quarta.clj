@@ -138,8 +138,8 @@
 (def C (start-from 60))
 (defs [D E F G A B]
   (map
-    (comp from C major inc)
-    (range)))
+    (comp from C major)
+    (rest (range))))
 
 (defs [sharp flat] [inc dec])
 
@@ -281,7 +281,7 @@
 (defn graph! [title points]
   (let [
       start (now)
-      most (fn [member comparison] (->> points (map #(% member)) (reduce comparison)))
+      most (fn [member comparison] (->> points (map member (reduce comparison))))
       max-x (most :time max)
       min-x (most :time min)
       max-y (most :pitch max)
@@ -298,7 +298,8 @@
       :setup (fn [] (smooth) (frame-rate 6) (background 200))  
       :draw  (fn []
                (let [colours (fnil {:dux 50, :comes 100, :bass 150} :dux)]
-                 (doseq [{x :time y :pitch part :part} (->> points (past (now)) normalise)]
+                 (doseq [{x :time y :pitch part :part}
+                         (->> points (past (now)) normalise)]
                    (stroke-weight 5) (fill 50) (stroke (colours part))
                    (ellipse (* (width) x) (- (* 2/3 (height)) (* (/ (height) 3) y)) 10 10)))) 
       :size [800 600])
