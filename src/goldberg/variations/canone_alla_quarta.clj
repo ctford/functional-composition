@@ -265,13 +265,11 @@
     notes))
 
 (defn graph! [title points]
-  (let [
-      most (fn [member comparison] (->> points (map member) (reduce comparison)))
-      max-x (most :time max)
-      min-x (most :time min)
-      max-y (most :pitch max)
-      min-y (most :pitch min)
-      past (fn [end points] (filter #(< (:time %) end) points))
+  (let [past (fn [end points] (filter #(< (:time %) end) points))
+        xs (map :time points)
+        ys (map :pitch points)
+        [max-x max-y] (map (partial apply max) [xs ys])
+        [min-x min-y] (map (partial apply min) [xs ys])
       normalise (fn [points] (->> points
         (where :time (from (- min-x)))
         (where :pitch (from (- min-y)))
