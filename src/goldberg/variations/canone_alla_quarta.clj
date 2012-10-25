@@ -94,7 +94,7 @@
 (defn midi->hz [pitch]
     (*
       8.1757989156 ; midi zero
-      (java.lang.Math/pow 2 (/ note 12))))
+      (java.lang.Math/pow 2 (/ pitch 12))))
 
 ;(midi->hz 69)
 
@@ -275,7 +275,7 @@
 ; canone alla quarta, by johann sebastian bach
 (defn canone-alla-quarta [notes]
   (canon
-    #(->> % (simple 3) mirror (interval -3))
+    #(->> % (simple 3) mirror (interval -3) (where :part (constantly :comes)))
     notes))
 
 (defn graph! [title points]
@@ -300,19 +300,19 @@
                (frame-rate 6)
                (background 200))  
       :draw  (fn []
-               (stroke 100)
-               (stroke-weight 5)
-               (fill 50)
-               (doseq [[x y] (->> points (past (now)) normalise)]
-                 (ellipse (* (width) x) (- (* 2/3 (height)) (* (/ (height) 3) y)) 10 10))) 
+               (let [colours (fnil {:dux 50, :comes 100, :bass 150} :dux)]
+                 (stroke-weight 5)
+                 (fill 50)
+                 (doseq [{x :time y :pitch part :part} (->> points (past (now)) normalise)]
+                   (stroke (colours part))
+                   (ellipse (* (width) x) (- (* 2/3 (height)) (* (/ (height) 3) y)) 10 10)))) 
       :size [800 600])
     points))
 
-;(->> melody
+;(->> (where :part (constantly :dux) melody)
 ;  canone-alla-quarta
-;  (concat bass)
+;  (concat (where :part (constantly :bass) bass))
 ;  (in-key (comp G major))
 ;  (in-time (bpm 90))
 ;  (graph! "Time vs pitch")
-  ;play!
-;  )
+;  play!)
