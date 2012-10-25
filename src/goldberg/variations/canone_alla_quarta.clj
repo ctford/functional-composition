@@ -297,10 +297,10 @@
       :size [800 600])
     notes))
 
-(->> (where :voice (is :leader) melody)
-  canone-alla-quarta
-  (concat (where :voice (is :bass) bass))
-  (where :pitch (comp G major))
-  (where :time (bpm 90))
-  play!
-  (graph! "Time vs pitch"))
+;(->> (where :voice (is :leader) melody)
+;  canone-alla-quarta
+;  (concat (where :voice (is :bass) bass))
+;  (where :pitch (comp G major))
+;  (where :time (bpm 90))
+;  play!
+;  (graph! "Time vs pitch"))
