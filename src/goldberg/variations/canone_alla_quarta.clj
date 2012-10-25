@@ -101,15 +101,15 @@
 (defn ding! [midi] (bell (midi->hz midi) 3))
 
 (defn play! [notes] 
-  (doseq [[ms midi] notes]
+  (doseq [{ms :time midi :pitch} notes]
     (at ms (ding! midi)))
   notes)
 
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
 (defn even-melody [pitches]
   (let [times (reductions + (repeat 400))
-        notes (map vector times pitches)]
-    (->> notes (where 0 #(+ (now) %)) play!)))
+        notes (map #(zipmap [:time :pitch] [%1 %2])times pitches)]
+    (->> notes (where :time #(+ (now) %)) play!)))
 
 ;(even-melody (range 70 81))
 
@@ -190,14 +190,13 @@
           1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3
           2/3 1/3 2/3 1/3 2]
         times (reductions + 0 durations)]
-      (map vector times pitches)))
+      (map #(zipmap [:time :pitch] [%1 %2]) times pitches)))
 
 ;row-row-row-your-boat
 
 (defn bpm [beats] (fn [beat] (-> beat (/ beats) (* 60) (* 1000))))
 ;((bpm 120) 3)
 
-(defs [timing pitch] [0 1])
 ;(play!
 ;  (map
 ;    (fn [[beat degree]]
@@ -235,11 +234,11 @@
                  [-1 1 -1] [5 0]])]
         [durations pitches] (map concat call response development)
         timings (map (partial + 1/2) (accumulate durations))]
-    (map vector timings pitches)))
+    (map #(zipmap [:time :pitch] [%1 %2]) timings pitches)))
 
 (def bass
   (let [triples (partial mapcat #(repeat 3 %))]
-    (map vector
+    (map #(zipmap [:time :pitch] [%1 %2]) 
        (accumulate (repeats [[21 1] [13 1/4]]))
        (concat
          (triples (runs [[-7 -10] [-12 -10]]))
@@ -253,16 +252,16 @@
 
 (defn in-time [tempo notes]
   (->> notes
-    (where timing tempo)
-    (where timing (start-from (now)))))
+    (where :time tempo)
+    (where :time (start-from (now)))))
 
-(defn in-key [scale notes] (->> notes (where pitch scale)))
+(defn in-key [scale notes] (->> notes (where :pitch scale)))
 
 ; flavours of canon
-(defn simple [wait notes] (->> notes (where timing (start-from wait))))
-(defn interval [interval notes] (->> notes (where pitch (start-from interval))))
-(defn mirror [notes] (->> notes (where pitch -)))
-(defn crab [notes] (->> notes (where timing -)))
+(defn simple [wait notes] (->> notes (where :time (start-from wait))))
+(defn interval [interval notes] (->> notes (where :pitch (start-from interval))))
+(defn mirror [notes] (->> notes (where :pitch -)))
+(defn crab [notes] (->> notes (where :time -)))
 (def table (comp mirror crab))
 
 ; round
@@ -270,7 +269,7 @@
 ;  (canon (partial simple 4))
 ;  (in-key (comp C major))
 ;  (in-time (bpm 90))
-;  (graph! "Row row row your boat"))
+;  (graph! "Row row row your boat")
 ;  play!)
 
 ; canone alla quarta, by johann sebastian bach
@@ -283,17 +282,16 @@
   (let [
       start (now)
       most (fn [member comparison] (->> points (map #(% member)) (reduce comparison)))
-      max-x (most timing max)
-      min-x (most timing min)
-      max-y (most pitch max)
-      min-y (most pitch min)
-      past (fn [end points] (filter #(< (% timing) end) points))
+      max-x (most :time max)
+      min-x (most :time min)
+      max-y (most :pitch max)
+      min-y (most :pitch min)
+      past (fn [end points] (filter #(< (:time %) end) points))
       normalise (fn [points] (->> points
-        (where timing (start-from (- min-x)))
-        (where pitch (start-from (- min-y)))
-        (where timing #(/ % (- max-x min-x)))
-        (where pitch #(/ % (- max-y min-y)))
-                               ))]
+        (where :time (start-from (- min-x)))
+        (where :pitch (start-from (- min-y)))
+        (where :time #(/ % (- max-x min-x)))
+        (where :pitch #(/ % (- max-y min-y)))))]
                                
     (sketch 
       :title title
@@ -316,5 +314,5 @@
 ;  (in-key (comp G major))
 ;  (in-time (bpm 90))
 ;  (graph! "Time vs pitch")
-;  play!
+  ;play!
 ;  )
