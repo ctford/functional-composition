@@ -255,8 +255,6 @@
     (where :time tempo)
     (where :time (start-from (now)))))
 
-(defn in-key [scale notes] (->> notes (where :pitch scale)))
-
 ; flavours of canon
 (defn simple [wait notes] (->> notes (where :time (start-from wait))))
 (defn interval [interval notes] (->> notes (where :pitch (start-from interval))))
@@ -267,7 +265,7 @@
 ; round
 ;(->> row-row-row-your-boat
 ;  (canon (partial simple 4))
-;  (in-key (comp C major))
+;  (where :pitch (comp C major))
 ;  (in-time (bpm 90))
 ;  (graph! "Row row row your boat")
 ;  play!)
@@ -312,7 +310,7 @@
 ;(->> (where :part (constantly :dux) melody)
 ;  canone-alla-quarta
 ;  (concat (where :part (constantly :bass) bass))
-;  (in-key (comp G major))
+;  (where :pitch (comp G major))
 ;  (in-time (bpm 90))
 ;  (graph! "Time vs pitch")
 ;  play!)
