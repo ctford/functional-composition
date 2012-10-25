@@ -260,7 +260,7 @@
   (canon
     (fn [notes] (->> notes 
        (simple 3) mirror (interval -3)
-       (where :part (constantly :comes)))
+       (where :voice (constantly :follower)))
     notes))
 
 (defn graph! [title points]
@@ -281,17 +281,20 @@
       :title title
       :setup (fn [] (smooth) (frame-rate 6) (background 200))  
       :draw  (fn []
-               (let [colours (fnil {:dux 50, :comes 100, :bass 150} :dux)]
-                 (doseq [{x :time y :pitch part :part}
+               (let [colours (fnil {:leader 50, :follower 100, :bass 150} :leader)]
+                 (doseq [{x :time y :pitch part :voice}
                          (->> points (past (now)) normalise)]
                    (stroke-weight 5) (fill 50) (stroke (colours part))
-                   (ellipse (* (width) x) (- (* 2/3 (height)) (* (/ (height) 3) y)) 10 10)))) 
+                   (ellipse
+                     (* (width) x)
+                     (- (* 2/3 (height)) (* (/ (height) 3) y))
+                     10 10)))) 
       :size [800 600])
     points))
 
-;(->> (where :part (constantly :dux) melody)
+;(->> (where :voice (constantly :leader) melody)
 ;  canone-alla-quarta
-;  (concat (where :part (constantly :bass) bass))
+;  (concat (where :voice (constantly :bass) bass))
 ;  (where :pitch (comp G major))
 ;  (where :time (bpm 90))
 ;  play!
