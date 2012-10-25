@@ -299,7 +299,7 @@
       :title title
       :setup (fn []
                (smooth)
-               (frame-rate 60)
+               (frame-rate 6)
                (background 200))  
       :draw  (fn []
                (stroke 100)
