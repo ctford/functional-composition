@@ -261,12 +261,12 @@
   (canon
     (fn [notes] (->> notes 
        (simple 3) mirror (interval -3)
-       (where :voice (is :follower)))
+       (where :voice (is :follower))))
     notes))
 
 (defn graph! [title points]
   (let [
-      most (fn [member comparison] (->> points (map member (reduce comparison))))
+      most (fn [member comparison] (->> points (map member) (reduce comparison)))
       max-x (most :time max)
       min-x (most :time min)
       max-y (most :pitch max)
@@ -288,15 +288,15 @@
                    (stroke-weight 5) (fill 50) (stroke (colours part))
                    (ellipse
                      (* (width) x)
-                     (- (* 2/3 (height)) (* (/ (height) 3) y))
+                     (- (* 2/3 (height)) (* 1/3 (height) y))
                      10 10)))) 
       :size [800 600])
     points))
 
-;(->> (where :voice (is :leader) melody)
-;  canone-alla-quarta
-;  (concat (where :voice (is :bass) bass))
-;  (where :pitch (comp G major))
-;  (where :time (bpm 90))
-;  play!
-;  (graph! "Time vs pitch"))
+(->> (where :voice (is :leader) melody)
+  canone-alla-quarta
+  (concat (where :voice (is :bass) bass))
+  (where :pitch (comp G major))
+  (where :time (bpm 90))
+  play!
+  (graph! "Time vs pitch"))
