@@ -270,6 +270,7 @@
 ;  (canon (partial simple 4))
 ;  (in-key (comp C major))
 ;  (in-time (bpm 90))
+;  (graph! "Row row row your boat"))
 ;  play!)
 
 ; canone alla quarta, by johann sebastian bach
@@ -281,7 +282,7 @@
 (defn graph! [title points]
   (let [
       start (now)
-      most (fn [member comparison] (->> points (map #(% member)) (apply comparison)))
+      most (fn [member comparison] (->> points (map #(% member)) (reduce comparison)))
       max-x (most timing max)
       min-x (most timing min)
       max-y (most pitch max)
