@@ -264,17 +264,23 @@
        (where :voice (is :follower))))
     notes))
 
-(defn graph! [title points]
-  (let [past (fn [end points] (filter #(< (:time %) end) points))
-        xs (map :time points)
-        ys (map :pitch points)
-        [max-x max-y] (map (partial apply max) [xs ys])
-        [min-x min-y] (map (partial apply min) [xs ys])
-      normalise (fn [points] (->> points
-        (where :time (from (- min-x)))
-        (where :pitch (from (- min-y)))
-        (where :time #(/ % (- max-x min-x)))
-        (where :pitch #(/ % (- max-y min-y)))))]
+(defn graph! [title notes]
+  (let [highlow (fn [k points]
+                  (let [values (map k points)]
+                    [(apply max values) 
+                     (apply min values)]))
+        [max-x min-x] (highlow :time notes)
+        [max-y min-y] (highlow :pitch notes)
+
+        adjust (fn [k high low points]
+                 (->> points
+                   (where k (from (- low)))
+                   (where k #(/ % (- high low)))))
+        normalise (fn [points]
+                    (->> points
+                      (filter #(< (:time %) (now)))
+                      (adjust :time max-x min-x)
+                      (adjust :pitch max-y min-y)))]
                                
     (sketch 
       :title title
@@ -282,14 +288,14 @@
       :draw  (fn []
                (let [colours (fnil {:leader 50, :follower 100, :bass 150} :leader)]
                  (doseq [{x :time y :pitch part :voice}
-                         (->> points (past (now)) normalise)]
+                         (normalise notes)]
                    (stroke-weight 5) (fill 50) (stroke (colours part))
                    (ellipse
                      (* (width) x)
                      (- (* 2/3 (height)) (* 1/3 (height) y))
                      10 10)))) 
       :size [800 600])
-    points))
+    notes))
 
 (->> (where :voice (is :leader) melody)
   canone-alla-quarta
