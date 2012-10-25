@@ -101,17 +101,18 @@
 (defn ding! [midi] (bell (midi->hz midi) 3))
 
 (defn note [timing pitch] {:time timing :pitch pitch}) 
+(defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
 
 (defn play! [notes] 
-  (doseq [{ms :time midi :pitch} notes]
-    (at ms (ding! midi)))
-  notes)
+  (let [scheduled-notes (->> notes (where :time (from (now))))]
+    (doseq [{ms :time midi :pitch} scheduled-notes]
+      (at ms (ding! midi)))
+    scheduled-notes))
 
-(defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
 (defn even-melody [pitches]
   (let [times (reductions + (repeat 400))
         notes (map note times pitches)]
-    (->> notes (where :time (from (now))) play!)))
+    (play! notes)))
 
 ;(even-melody (range 70 81))
 
@@ -135,7 +136,7 @@
 
 (def major (scale [2 2 1 2 2 2 1]))
 
-(def C (start-from 60))
+(def C (from 60))
 (defs [D E F G A B]
   (map
     (comp from C major)
@@ -187,11 +188,10 @@
 (defn bpm [beats] (fn [beat] (-> beat (/ beats) (* 60) (* 1000))))
 ;((bpm 120) 3)
 
-;(play!
-;  (map
-;    (fn [[beat degree]]
-;      [((comp (from (now)) (bpm 90)) beat) ((comp C major) degree)])
-;    row-row-row-your-boat))
+;(->> row-row-row-your-boat
+;  (where :time (bpm 90))
+;  (where :pitch (comp C major))
+;  play!)
 
 (defn run [[from & tos]]
   (if-let [to (first tos)]
@@ -240,11 +240,6 @@
 
 (defn canon [f notes] (concat notes (f notes)))
 
-(defn in-time [tempo notes]
-  (->> notes
-    (where :time tempo)
-    (where :time (from (now)))))
-
 ; flavours of canon
 (defn simple [wait notes] (->> notes (where :time (from wait))))
 (defn interval [interval notes] (->> notes (where :pitch (from interval))))
@@ -256,9 +251,9 @@
 ;(->> row-row-row-your-boat
 ;  (canon (partial simple 4))
 ;  (where :pitch (comp C major))
-;  (in-time (bpm 90))
-;  (graph! "Row row row your boat")
-;  play!)
+;  (where :time (bpm 90))
+;  play!
+;  (graph! "Row row row your boat"))
 
 ; canone alla quarta, by johann sebastian bach
 (defn canone-alla-quarta [notes]
@@ -268,7 +263,6 @@
 
 (defn graph! [title points]
   (let [
-      start (now)
       most (fn [member comparison] (->> points (map member (reduce comparison))))
       max-x (most :time max)
       min-x (most :time min)
@@ -297,6 +291,6 @@
 ;  canone-alla-quarta
 ;  (concat (where :part (constantly :bass) bass))
 ;  (where :pitch (comp G major))
-;  (in-time (bpm 90))
-;  (graph! "Time vs pitch")
-;  play!)
+;  (where :time (bpm 90))
+;  play!
+;  (graph! "Time vs pitch"))
