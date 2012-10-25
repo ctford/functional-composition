@@ -305,14 +305,15 @@
                (stroke-weight 5)
                (fill 50)
                (doseq [[x y] (->> points (past (now)) normalise)]
-                 (ellipse (* (width) x) (* (height) y) 10 10))) 
-      :size [1000 700])
+                 (ellipse (* (width) x) (- (* 2/3 (height)) (* (/ (height) 3) y)) 10 10))) 
+      :size [800 600])
     points))
 
 ;(->> melody
 ;  canone-alla-quarta
 ;  (concat bass)
 ;  (in-key (comp G major))
-;  (in-time (bpm 20))
+;  (in-time (bpm 90))
 ;  (graph! "Time vs pitch")
-;  play!)
+;  play!
+;  )
