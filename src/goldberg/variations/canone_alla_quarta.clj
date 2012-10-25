@@ -91,7 +91,7 @@
 ;; Equal temperament                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn midi->hz [note]
+(defn midi->hz [pitch]
     (*
       8.1757989156 ; midi zero
       (java.lang.Math/pow 2 (/ note 12))))
@@ -108,7 +108,7 @@
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
 (defn even-melody [pitches]
   (let [times (reductions + (repeat 400))
-        notes (map #(zipmap [:time :pitch] [%1 %2])times pitches)]
+        notes (map #(zipmap [:time :pitch] [%1 %2]) times pitches)]
     (->> notes (where :time #(+ (now) %)) play!)))
 
 ;(even-melody (range 70 81))
