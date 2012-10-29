@@ -103,7 +103,6 @@
 (defn note [timing pitch] {:time timing :pitch pitch}) 
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
 (defn from [base] (partial + base))
-(def is constantly)
 
 (defn play! [notes] 
   (let [scheduled-notes (->> notes (where :time (from (now))))]
@@ -239,10 +238,11 @@
 ;; Canon                                           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn canon [f notes] (concat notes (f notes)))
+(defn canon [f notes]
+  (concat notes (arrange :follower (f notes))))
 
 ; flavours of canon
-(defn simple [lag] (partial where :time (from lag)))
+(defn simple [wait] (partial where :time (from wait)))
 (defn interval [interval] (partial where :pitch (from interval)))
 (def mirror (fn [notes] (->> notes (where :pitch -))))
 (def crab (fn [notes] (->> notes (where :time -))))
@@ -258,9 +258,9 @@
 
 ; canone alla quarta, by johann sebastian bach
 (defn canone-alla-quarta [notes]
-  (->> notes
-    (canon (comp (interval -3) mirror (simple 3)))
-    (where :voice (is :follower))))
+  (canon
+    (comp (interval -3) mirror (simple 3))
+    notes))
 
 (defn graph! [title notes]
   (let [highlow (fn [k points]
@@ -289,11 +289,11 @@
                               :follower 100
                               :bass 150}
                              :leader)]
-                 (doseq [{x :time y :pitch part :voice}
+                 (doseq [{x :time y :pitch voice :part}
                          (normalise notes)]
                    (stroke-weight 5)
                    (fill 50)
-                   (stroke (colours part))
+                   (stroke (colours voice))
                    (ellipse
                      (* (width) x)
                      (- (* 2/3 (height)) (* 1/3 (height) y))
@@ -301,9 +301,9 @@
       :size [800 600])
     notes))
 
-;(->> (where :voice (is :leader) melody)
+;(->> (arrange :leader melody) 
 ;  canone-alla-quarta
-;  (concat (where :voice (is :bass) bass))
+;  (concat (arrange :bass bass))
 ;  (where :pitch (comp G major))
 ;  (where :time (bpm 90))
 ;  play!
