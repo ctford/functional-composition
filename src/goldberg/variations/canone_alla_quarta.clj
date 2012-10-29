@@ -102,6 +102,7 @@
 
 (defn note [timing pitch] {:time timing :pitch pitch}) 
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
+(defn from [base] (partial + base))
 (def is constantly)
 
 (defn play! [notes] 
@@ -126,7 +127,6 @@
            (fn [name value] `(def ~name ~value))
            names (eval values))))
 
-(defn from [base] (partial + base))
 (defn sum-n [series n] (reduce + (take n series)))
 
 (defn scale [intervals]
@@ -242,15 +242,19 @@
 (defn canon [f notes] (concat notes (f notes)))
 
 ; flavours of canon
-(defn simple [lag notes] (->> notes (where :time (from lag))))
-(defn interval [interval notes] (->> notes (where :pitch (from interval))))
-(defn mirror [notes] (->> notes (where :pitch -)))
-(defn crab [notes] (->> notes (where :time -)))
+(defn simple [lag]
+  (fn [notes] (->> notes (where :time (from lag)))))
+
+(defn interval [interval]
+  (fn [notes] (->> notes (where :pitch (from interval)))))
+
+(def mirror (fn [notes] (->> notes (where :pitch -))))
+(def crab (fn [notes] (->> notes (where :time -))))
 (def table (comp mirror crab))
 
 ; round
 ;(->> row-row-row-your-boat
-;  (canon (partial simple 4))
+;  (canon (simple 4))
 ;  (where :pitch (comp C major))
 ;  (where :time (bpm 90))
 ;  play!
@@ -258,11 +262,9 @@
 
 ; canone alla quarta, by johann sebastian bach
 (defn canone-alla-quarta [notes]
-  (canon
-    (fn [notes] (->> notes 
-       (simple 3) mirror (interval -3)
-       (where :voice (is :follower))))
-    notes))
+  (->> notes
+    (canon (comp (interval -3) mirror (simple 3)))
+    (where :voice (is :follower))))
 
 (defn graph! [title notes]
   (let [highlow (fn [k points]
@@ -286,10 +288,16 @@
       :title title
       :setup (fn [] (smooth) (frame-rate 6) (background 200))  
       :draw  (fn []
-               (let [colours (fnil {:leader 50, :follower 100, :bass 150} :leader)]
+               (let [colours
+                       (fnil {:leader 50
+                              :follower 100
+                              :bass 150}
+                             :leader)]
                  (doseq [{x :time y :pitch part :voice}
                          (normalise notes)]
-                   (stroke-weight 5) (fill 50) (stroke (colours part))
+                   (stroke-weight 5)
+                   (fill 50)
+                   (stroke (colours part))
                    (ellipse
                      (* (width) x)
                      (- (* 2/3 (height)) (* 1/3 (height) y))
