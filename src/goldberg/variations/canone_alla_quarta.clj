@@ -242,12 +242,8 @@
 (defn canon [f notes] (concat notes (f notes)))
 
 ; flavours of canon
-(defn simple [lag]
-  (fn [notes] (->> notes (where :time (from lag)))))
-
-(defn interval [interval]
-  (fn [notes] (->> notes (where :pitch (from interval)))))
-
+(defn simple [lag] (partial where :time (from lag)))
+(defn interval [interval] (partial where :pitch (from interval)))
 (def mirror (fn [notes] (->> notes (where :pitch -))))
 (def crab (fn [notes] (->> notes (where :time -))))
 (def table (comp mirror crab))
