@@ -9,10 +9,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns goldberg.variations.canone-alla-quarta
-  (:use [overtone.live
-         :only [definst sin-osc mix at now line stop
-                FREE env-gen perc detect-silence]]
-        [quil.core :exclude [scale line]]))
+  (:use [overtone.live :exclude
+          [scale midi->hz note sharp flat run]]
+        [quil.core :only
+          [smooth sketch ellipse frame-rate background
+           width height stroke stroke-weight fill]]))
 
 
 
@@ -102,6 +103,7 @@
 
 (defn note [timing pitch] {:time timing :pitch pitch}) 
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
+(defn arrange [part notes] (where :part (constantly part) notes))
 (defn from [base] (partial + base))
 
 (defn play! [notes] 
@@ -239,7 +241,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn canon [f notes]
-  (concat notes (arrange :follower (f notes))))
+  (concat notes
+    (arrange :follower
+      (f notes))))
 
 ; flavours of canon
 (defn simple [wait] (partial where :time (from wait)))
