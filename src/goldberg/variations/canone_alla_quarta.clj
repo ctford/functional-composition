@@ -119,7 +119,7 @@
 
 (defn note [timing pitch] {:time timing :pitch pitch}) 
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
-(defn arrange [part notes] (where :part (constantly part) notes))
+(defn arrange [part notes] (->> notes (where :part (constantly part))))
 (defn from [base] (partial + base))
 
 (defn play! [notes] 
