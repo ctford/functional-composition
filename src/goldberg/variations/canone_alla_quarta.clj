@@ -21,10 +21,6 @@
 
 
 
-
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Sine waves                                      ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -44,11 +40,18 @@
 ;(beep)
 ;(stop)
 
-; harmonics
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Harmonics                                       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (definst bell [frequency 440 duration 10
                h0 1 h1 0.6 h2 0.4 h3 0.25 h4 0.2 h5 0.15]
-  (let [harmonics ; [ 1  2  3  4   5   6  ]
-                  [ 1  2  3  4.2 5.4 6.8] ; more realistic timbre
+  (let [harmonics [ 1  2  3  4   5   6  ]
+                  ;[ 1  2  3  4.2 5.4 6.8] ; more realistic timbre
         proportions [h0 h1 h2 h3 h4 h5]
         proportional-partial
          (fn [harmonic proportion]
@@ -63,6 +66,7 @@
 ;(bell)
 
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Psycho-acoustics                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -70,8 +74,6 @@
 ;(bell 600 10.0)
 ;(bell 500 10.0 0.0)
 ;(bell 400 10.0 0.0 0.0)
-
-
 
 
 
@@ -101,6 +103,20 @@
 
 (defn ding! [midi] (bell (midi->hz midi) 3))
 
+
+
+
+
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Musical events                                  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn note [timing pitch] {:time timing :pitch pitch}) 
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
 (defn arrange [part notes] (where :part (constantly part) notes))
@@ -118,6 +134,7 @@
     (play! notes)))
 
 ;(even-melody (range 70 81))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Scale                                           ;;
