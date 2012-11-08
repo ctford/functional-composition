@@ -4,7 +4,6 @@
 ;; (ThoughtWorks)                                  ;;
 ;;                                                 ;;
 ;; http://github.com/ctford/functional-composition ;;
-;; http://github.com/ctford/goldberg               ;;
 ;; http://github.com/overtone/overtone             ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -14,6 +13,7 @@
         [quil.core :only
           [smooth sketch ellipse frame-rate background
            width height stroke stroke-weight fill]]))
+
 
 
 
