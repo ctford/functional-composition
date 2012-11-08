@@ -9,7 +9,7 @@
 
 (ns goldberg.variations.canone-alla-quarta
   (:use [overtone.live :exclude
-          [scale midi->hz note sharp flat run]]
+          [scale pitch midi->hz note sharp flat run]]
         [quil.core :only
           [smooth sketch ellipse frame-rate background
            width height stroke stroke-weight fill]]))
@@ -118,7 +118,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn note [timing pitch] {:time timing :pitch pitch}) 
-(defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
 
 (defn play! [notes] 
   (let [start (now)]
@@ -132,6 +131,9 @@
     (play! notes)))
 
 ;(even-melody! (range 70 81))
+
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -206,6 +208,8 @@
 
 (defn bpm [beats] (fn [beat] (-> beat (/ beats) (* 60) (* 1000))))
 ;((bpm 120) 3)
+
+(defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
 
 ;(->> row-row-row-your-boat
 ;  (where :time (bpm 90))
