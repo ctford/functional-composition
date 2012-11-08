@@ -21,6 +21,7 @@
 
 
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Sine waves                                      ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -54,8 +55,10 @@
         proportions [h0 h1 h2 h3 h4 h5]
         proportional-partial
          (fn [harmonic proportion]
-           (let [envelope (env-gen (perc 0.01 (* proportion duration)))
-                 overtone (* harmonic frequency)]
+           (let [envelope
+                  (env-gen (perc 0.01 (* proportion duration)))
+                 overtone
+                  (* harmonic frequency)]
              (* 1/2 proportion envelope (sin-osc overtone))))
         partials (map proportional-partial harmonics proportions)
         whole (mix partials)]
@@ -263,12 +266,11 @@
     (comp (interval -3) mirror (simple 3))
     notes))
 
-(->> melody 
-  canone-alla-quarta
-  (concat bass)
-  (where :pitch (comp G major))
-  (where :time (bpm 90))
-  graph!)
+;(->> melody 
+;  canone-alla-quarta
+;  (concat bass)
+;  (where :pitch (comp G major))
+;  (where :time (bpm 90))
 ;  play!)
 
 
@@ -296,7 +298,7 @@
                                
     (sketch 
       :title "Time vs pitch"
-      :setup (fn [] (smooth) (frame-rate 6) (background 200))  
+      :setup (fn [] (smooth) (frame-rate 20) (background 200))  
       :draw  (fn []
                (let [colours
                        (fnil {:leader 50
