@@ -284,6 +284,17 @@
     (comp (interval -3) mirror (simple 3))
     notes))
 
+;(->> melody 
+;  canone-alla-quarta
+;  (concat bass)
+;  (where :pitch (comp G major))
+;  (where :time (bpm 90))
+;  play!)
+
+
+
+
+; appendix
 (defn graph! [title notes]
   (let [points (where :time (from (now)) notes)
         highlow (fn [k]
@@ -323,11 +334,3 @@
                      10 10)))) 
       :size [800 600])
     notes))
-
-;(->> melody 
-;  canone-alla-quarta
-;  (concat bass)
-;  (where :pitch (comp G major))
-;  (where :time (bpm 90))
-;  (graph! "Time vs pitch")
-;  play!)
