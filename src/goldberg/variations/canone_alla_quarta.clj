@@ -1,11 +1,11 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Functional Composition                          ;;
-;; by Chris Ford - @ctford                         ;;
-;; (ThoughtWorks)                                  ;;
-;;                                                 ;;
-;; http://github.com/ctford/functional-composition ;;
-;; http://github.com/overtone/overtone             ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Functional Composition                                    ;;
+;; by Chris Ford - @ctford                                   ;;
+;; (ThoughtWorks)                                            ;;
+;;                                                           ;;
+;; http://github.com/ctford/functional-composition           ;;
+;; http://github.com/overtone/overtone                       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns goldberg.variations.canone-alla-quarta
   (:use [overtone.live :exclude
@@ -22,9 +22,9 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Sine waves                                      ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Sine waves                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst tone [frequency 440] (sin-osc frequency))
 (definst doubletone [freq1 440 freq2 440]
@@ -45,9 +45,9 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Harmonics                                       ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Harmonics                                                 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst bell [frequency 440 duration 10
                h0 1 h1 0.6 h2 0.4 h3 0.25 h4 0.2 h5 0.15]
@@ -60,7 +60,8 @@
                  overtone
                   (* harmonic frequency)]
              (* 1/2 proportion envelope (sin-osc overtone))))
-        partials (map proportional-partial harmonics proportions)
+        partials
+          (map proportional-partial harmonics proportions)
         whole (mix partials)]
     (detect-silence whole :action FREE)
     whole))
@@ -70,9 +71,9 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Equal temperament                               ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Equal temperament                                         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn midi->hz [pitch]
     (*
@@ -93,9 +94,9 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Musical events                                  ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Musical events                                            ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn note [timing pitch] {:time timing :pitch pitch}) 
 
@@ -106,7 +107,7 @@
     notes))
 
 (defn even-melody! [pitches]
-  (let [times (reductions + (repeat 400))
+  (let [times (reductions + (repeat 1000/3))
         notes (map note times pitches)]
     (play! notes)))
 
@@ -116,9 +117,9 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Scale                                           ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Scale                                                     ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro defs [names values]
   `(do ~@(map
@@ -162,9 +163,9 @@
 ;    (map (comp D major) [0 1 2 0, 0 1 2 0, 2 3 4 _, 2 3 4 _]))
 ;)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Melody                                          ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Melody                                                    ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def row-row-row-your-boat
   (let [pitches
@@ -186,7 +187,7 @@
 
 ;row-row-row-your-boat
 
-(defn bpm [beats] (fn [beat] (-> beat (/ beats) (* 60) (* 1000))))
+(defn bpm [beats] (fn [beat] (/ (* beat 60 1000) beats)))
 ;((bpm 120) 3)
 
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
@@ -225,7 +226,8 @@
                  [12 1/4] [1 3]])
           (runs [[4] [4] [2 -3] [-1 -2] [0] [3 5] [1] [1] [1 2]
                  [-1 1 -1] [5 0]])]
-        [durations pitches] (map concat call response development)
+        [durations pitches]
+          (map concat call response development)
         times (map (from 1/2) (accumulate durations))]
       (map note times pitches)))
 
@@ -240,15 +242,19 @@
       (where :part (constantly :bass)))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Canon                                           ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Canon                                                     ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn canon [f notes] (concat notes (f notes)))
 
-; flavours of canon
-(defn simple [wait] (partial where :time (from wait)))
-(defn interval [interval] (partial where :pitch (from interval)))
+; varieties of canon
+(defn simple [wait]
+  (fn [notes] (->> notes (where :time (from wait)))))
+
+(defn interval [interval]
+  (fn [notes] (->> notes (where :pitch (from interval)))))
+
 (def mirror (fn [notes] (->> notes (where :pitch -))))
 (def crab (fn [notes] (->> notes (where :time -))))
 (def table (comp mirror crab))
@@ -271,12 +277,16 @@
 ;  (concat bass)
 ;  (where :pitch (comp G major))
 ;  (where :time (bpm 90))
-;  play!)
+;  play!
+;  graph!)
 
 
 
 
-; appendix
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Graphing                                                  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn graph! [notes]
   (let [points (where :time (from (now)) notes)
         highlow (fn [k]
