@@ -37,7 +37,7 @@
 
 ;(tone 300)
 ;(doubletone 300 300)
-;(beep)
+;(beep 300)
 ;(stop)
 
 
@@ -63,7 +63,7 @@
     (detect-silence whole :action FREE)
     whole))
 
-;(bell)
+;(bell 300)
 
 
 
@@ -126,12 +126,12 @@
       (at (+ ms start) (ding! midi)))
     notes))
 
-(defn even-melody [pitches]
+(defn even-melody! [pitches]
   (let [times (reductions + (repeat 400))
         notes (map note times pitches)]
     (play! notes)))
 
-;(even-melody (range 70 81))
+;(even-melody! (range 70 81))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -169,13 +169,13 @@
 (def pentatonic (scale [3 2 2 3 2]))
 (def chromatic (scale [1]))
 
-;(even-melody
+;(even-melody!
 ;  (map
 ;    (comp C major)
 ;    (range 15))
 ;)
 
-;(even-melody
+;(even-melody!
 ;  (let [_ -100]
 ;    (map (comp D major) [0 1 2 0, 0 1 2 0, 2 3 4 _, 2 3 4 _]))
 ;)
@@ -220,7 +220,7 @@
       (concat up-or-down (run tos)))
     [from]))
 
-;(even-melody (map (comp G major)
+;(even-melody! (map (comp G major)
 ;            (run [0 4 -1 1 0])
 ;            ))
 
