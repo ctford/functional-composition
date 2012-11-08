@@ -243,18 +243,16 @@
                  [-1 1 -1] [5 0]])]
         [durations pitches] (map concat call response development)
         times (map (from 1/2) (accumulate durations))]
-    (->>
-      (map note times pitches)
-      (where :part (constantly :leader)))))
+      (map note times pitches)))
 
 (def bass
   (let [triples (partial mapcat #(repeat 3 %))]
     (->>
       (map note
-       (accumulate (repeats [[21 1] [13 1/4]]))
-       (concat
-         (triples (runs [[-7 -10] [-12 -10]]))
-         (runs [[5 0] [6 0]])))
+        (accumulate (repeats [[21 1] [13 1/4]]))
+        (concat
+          (triples (runs [[-7 -10] [-12 -10]]))
+          (runs [[5 0] [6 0]])))
       (where :part (constantly :bass)))))
 
 
