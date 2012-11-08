@@ -263,11 +263,12 @@
     (comp (interval -3) mirror (simple 3))
     notes))
 
-;(->> melody 
-;  canone-alla-quarta
-;  (concat bass)
-;  (where :pitch (comp G major))
-;  (where :time (bpm 90))
+(->> melody 
+  canone-alla-quarta
+  (concat bass)
+  (where :pitch (comp G major))
+  (where :time (bpm 90))
+  graph!)
 ;  play!)
 
 
@@ -311,5 +312,5 @@
                      (* (width) x)
                      (- (* 2/3 (height)) (* 1/3 (height) y))
                      10 10)))) 
-      :size [800 600])
+      :size [1024 768])
     notes))
