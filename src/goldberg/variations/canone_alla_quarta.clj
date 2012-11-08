@@ -293,7 +293,7 @@
 
 
 ; appendix
-(defn graph! [title notes]
+(defn graph! [notes]
   (let [points (where :time (from (now)) notes)
         highlow (fn [k]
                   (let [values (map k points)]
@@ -313,7 +313,6 @@
                       (adjust :pitch max-y min-y)))]
                                
     (sketch 
-      :title title
       :setup (fn [] (smooth) (frame-rate 6) (background 200))  
       :draw  (fn []
                (let [colours
