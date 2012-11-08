@@ -119,8 +119,6 @@
 
 (defn note [timing pitch] {:time timing :pitch pitch}) 
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
-(defn arrange [part notes] (->> notes (where :part (constantly part))))
-(defn from [base] (partial + base))
 
 (defn play! [notes] 
   (let [start (now)]
@@ -155,7 +153,9 @@
 
 (def major (scale [2 2 1 2 2 2 1]))
 
+(defn from [offset] (partial + offset))
 (def C (from 60))
+
 (defs [D E F G A B]
   (map
     (comp from C major)
@@ -243,24 +243,26 @@
                  [-1 1 -1] [5 0]])]
         [durations pitches] (map concat call response development)
         times (map (from 1/2) (accumulate durations))]
-    (map note times pitches)))
+    (->>
+      (map note times pitches)
+      (where :part (constantly :leader)))))
 
 (def bass
   (let [triples (partial mapcat #(repeat 3 %))]
-    (map note
+    (->>
+      (map note
        (accumulate (repeats [[21 1] [13 1/4]]))
        (concat
          (triples (runs [[-7 -10] [-12 -10]]))
-         (runs [[5 0] [6 0]])))))
+         (runs [[5 0] [6 0]])))
+      (where :part (constantly :bass)))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Canon                                           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn canon [f notes]
-  (concat notes
-    (arrange :follower
-      (f notes))))
+(defn canon [f notes] (concat notes (f notes)))
 
 ; flavours of canon
 (defn simple [wait] (partial where :time (from wait)))
@@ -308,7 +310,7 @@
                (let [colours
                        (fnil {:leader 50
                               :follower 100
-                              :bass 150}
+                              :bass 180}
                              :leader)]
                  (doseq [{x :time y :pitch voice :part}
                          (normalise points)]
@@ -322,9 +324,9 @@
       :size [800 600])
     notes))
 
-;(->> (arrange :leader melody) 
+;(->> melody 
 ;  canone-alla-quarta
-;  (concat (arrange :bass bass))
+;  (concat bass)
 ;  (where :pitch (comp G major))
 ;  (where :time (bpm 90))
 ;  (graph! "Time vs pitch")
