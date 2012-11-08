@@ -310,7 +310,7 @@
                (let [colours
                        (fnil {:leader 50
                               :follower 100
-                              :bass 180}
+                              :bass 150}
                              :leader)]
                  (doseq [{x :time y :pitch voice :part}
                          (normalise points)]
