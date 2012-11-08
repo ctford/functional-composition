@@ -123,10 +123,10 @@
 (defn from [base] (partial + base))
 
 (defn play! [notes] 
-  (let [scheduled-notes (->> notes (where :time (from (now))))]
-    (doseq [{ms :time midi :pitch} scheduled-notes]
-      (at ms (ding! midi)))
-    scheduled-notes))
+  (let [start (now)]
+    (doseq [{ms :time midi :pitch} notes]
+      (at (+ ms start) (ding! midi)))
+    notes))
 
 (defn even-melody [pitches]
   (let [times (reductions + (repeat 400))
@@ -274,8 +274,7 @@
 ;  (canon (simple 4))
 ;  (where :pitch (comp C major))
 ;  (where :time (bpm 90))
-;  play!
-;  (graph! "Row row row your boat"))
+;  play!)
 
 ; canone alla quarta, by johann sebastian bach
 (defn canone-alla-quarta [notes]
@@ -284,12 +283,13 @@
     notes))
 
 (defn graph! [title notes]
-  (let [highlow (fn [k points]
+  (let [points (where :time (from (now)) notes)
+        highlow (fn [k]
                   (let [values (map k points)]
                     [(apply max values) 
                      (apply min values)]))
-        [max-x min-x] (highlow :time notes)
-        [max-y min-y] (highlow :pitch notes)
+        [max-x min-x] (highlow :time)
+        [max-y min-y] (highlow :pitch)
 
         adjust (fn [k high low points]
                  (->> points
@@ -311,7 +311,7 @@
                               :bass 150}
                              :leader)]
                  (doseq [{x :time y :pitch voice :part}
-                         (normalise notes)]
+                         (normalise points)]
                    (stroke-weight 5)
                    (fill 50)
                    (stroke (colours voice))
@@ -327,5 +327,5 @@
 ;  (concat (arrange :bass bass))
 ;  (where :pitch (comp G major))
 ;  (where :time (bpm 90))
-;  play!
-;  (graph! "Time vs pitch"))
+;  (graph! "Time vs pitch")
+;  play!)
