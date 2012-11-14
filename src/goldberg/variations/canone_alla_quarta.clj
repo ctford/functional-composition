@@ -190,7 +190,6 @@
 ;((bpm 120) 3)
 
 (defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
-
 ;(->> row-row-row-your-boat
 ;  (where :time (bpm 90))
 ;  (where :pitch (comp C major))
@@ -265,6 +264,11 @@
 ;  (where :time (bpm 90))
 ;  play!)
 
+;(defn canon [f notes]
+;  (->> notes
+;    f (where :part (constantly :follower))
+;    (concat notes)))
+
 ; canone alla quarta, by johann sebastian bach
 (defn canone-alla-quarta [notes]
   (canon
@@ -278,6 +282,11 @@
 ;  (where :time (bpm 90))
 ;  play!
 ;  graph!)
+
+
+
+
+
 
 
 
@@ -326,6 +335,3 @@
                      10 10)))) 
       :size [1024 768])
     notes))
-
-;(defn canon [f notes]
-;  (->> notes f (where :part (constantly :follower)) (concat notes)))
