@@ -307,6 +307,7 @@
                                
     (sketch 
       :title "Time vs pitch"
+      :target :perm-frame
       :setup (fn [] (smooth) (frame-rate 20) (background 200))  
       :draw  (fn []
                (let [colours
