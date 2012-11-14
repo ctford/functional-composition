@@ -74,10 +74,10 @@
 ;; Equal temperament                                         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn midi->hz [pitch]
+(defn midi->hz [midi]
     (*
       8.1757989156 ; midi zero
-      (java.lang.Math/pow 2 (/ pitch 12))))
+      (java.lang.Math/pow 2 (/ midi 12))))
 
 ;(midi->hz 69)
 
