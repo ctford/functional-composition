@@ -326,3 +326,6 @@
                      10 10)))) 
       :size [1024 768])
     notes))
+
+;(defn canon [f notes]
+;  (->> notes f (where :part (constantly :follower)) (concat notes)))
