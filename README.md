@@ -11,7 +11,8 @@ Thanks to everyone involved in building Overtone.
 @ctford's personal music:
 
 * https://github.com/ctford/whelmed
+* https://github.com/ctford/leipzig
 
-A complete rendition of Canone alla Quarta::
+A complete rendition of Canone alla Quarta:
 
 * https://github.com/ctford/goldberg
