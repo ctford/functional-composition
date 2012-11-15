@@ -320,15 +320,15 @@
       :setup (fn [] (smooth) (frame-rate 20) (background 200))  
       :draw  (fn []
                (let [colours
-                       (fnil {:leader 50
-                              :follower 100
-                              :bass 150}
+                       (fnil {:leader [100 20 10]
+                              :follower [20 10 100]
+                              :bass [10 150 20]}
                              :leader)]
                  (doseq [{x :time y :pitch voice :part}
                          (normalise points)]
                    (stroke-weight 5)
-                   (fill 50)
-                   (stroke (colours voice))
+                   (fill 255)
+                   (apply stroke (colours voice))
                    (ellipse
                      (* (width) x)
                      (- (* 2/3 (height)) (* 1/3 (height) y))
