@@ -320,9 +320,9 @@
       :setup (fn [] (smooth) (frame-rate 20) (background 200))  
       :draw  (fn []
                (let [colours
-                       (fnil {:leader [100 20 10]
-                              :follower [20 10 100]
-                              :bass [10 150 20]}
+                       (fnil {:leader [190 90 90]
+                              :follower [10 10 80]
+                              :bass [70 130 70]}
                              :leader)]
                  (doseq [{x :time y :pitch voice :part}
                          (normalise points)]
