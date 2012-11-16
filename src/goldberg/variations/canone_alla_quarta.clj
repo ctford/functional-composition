@@ -36,13 +36,12 @@
   (let [envelope (line 1 0 duration :action FREE)]
           (* envelope (sin-osc frequency))))
 
-;(tone 300)
-;(doubletone 300 300)
-;(beep 300)
-;(stop)
-
-
-
+(comment
+  (tone 300)
+  (doubletone 300 300)
+  (beep 300)
+  (stop)
+)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -65,9 +64,10 @@
     (detect-silence whole :action FREE)
     whole))
 
-;(bell 300)
-;(beep 300)
-
+(comment
+  (bell 300)
+  (beep 300)
+)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -75,20 +75,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn midi->hz [midi]
-    (*
-      8.1757989156 ; midi zero
-      (java.lang.Math/pow 2 (/ midi 12))))
+  (*
+    8.1757989156 ; midi zero
+    (java.lang.Math/pow 2 (/ midi 12))))
 
-;(midi->hz 69)
+(comment
+  (midi->hz 69)
+)
 
 (defn ding! [midi] (bell (midi->hz midi) 3))
 
-
-
-
-
-
-
+(comment
+  (ding! 69)
+)
 
 
 
@@ -110,10 +109,9 @@
         notes (map note times pitches)]
     (play! notes)))
 
-;(even-melody! (range 70 81))
-
-
-
+(comment
+  (even-melody! (range 70 81))
+)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -121,9 +119,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro defs [names values]
-  `(do ~@(map
-           (fn [name value] `(def ~name ~value))
-           names (eval values))))
+  `(do
+     ~@(map
+         (fn [name value] `(def ~name ~value))
+         names (eval values))))
 
 (defn sum-n [series n] (reduce + (take n series)))
 
@@ -151,16 +150,17 @@
 (def pentatonic (scale [3 2 2 3 2]))
 (def chromatic (scale [1]))
 
-;(even-melody!
-;  (map
-;    (comp C major)
-;    (concat (range 0 8) (reverse (range 0 7))))
-;)
+(comment
+  (even-melody!
+    (map
+      (comp C major)
+      (concat (range 0 8) (reverse (range 0 7)))))
 
-;(even-melody!
-;  (let [_ -100]
-;    (map (comp D major) [0 1 2 0, 0 1 2 0, 2 3 4 _, 2 3 4 _]))
-;)
+  (even-melody!
+    (let [_ -100] ; rest
+      (map (comp D major) [0 1 2 0 0 1 2 0 2 3 4 _ 2 3 4 _])))
+
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Melody                                                    ;;
@@ -184,16 +184,24 @@
         times (reductions + 0 durations)]
       (map note times pitches)))
 
-;row-row-row-your-boat
+(comment
+  row-row-row-your-boat
+)
 
 (defn bpm [beats] (fn [beat] (/ (* beat 60 1000) beats)))
-;((bpm 120) 3)
+(comment
+  ((bpm 120) 3)
+)
 
-(defn where [k f notes] (->> notes (map #(update-in % [k] f)))) 
-;(->> row-row-row-your-boat
-;  (where :time (bpm 90))
-;  (where :pitch (comp C major))
-;  play!)
+(defn where [k f notes] (->> notes (map #(update-in % [k] f))))
+
+(comment
+  (->> row-row-row-your-boat
+    (where :time (bpm 90))
+    (where :pitch (comp C major))
+    play!)
+
+)
 
 (defn run [[from & tos]]
   (if-let [to (first tos)]
@@ -203,9 +211,11 @@
       (concat up-or-down (run tos)))
     [from]))
 
-;(even-melody! (map (comp G major)
-;            (run [0 4 -1 1 0])
-;            ))
+(comment
+  (even-melody! (map (comp G major)
+                     (run [0 4 -1 1 0])))
+
+)
 
 (defn accumulate [series]
   (map (partial sum-n series) (range (count series))))
@@ -258,16 +268,23 @@
 (def table (comp mirror crab))
 
 ; round
-;(->> row-row-row-your-boat
-;  (canon (simple 4))
-;  (where :pitch (comp C major))
-;  (where :time (bpm 90))
-;  play!)
+(comment
+  (->> row-row-row-your-boat
+    (canon (simple 4))
+    (where :pitch (comp C major))
+    (where :time (bpm 90))
+    play!)
 
-;(defn canon [f notes]
-;  (->> notes
-;    f (where :part (constantly :follower))
-;    (concat notes)))
+)
+
+(comment
+  (defn canon [f notes]
+    (->> notes
+      f
+      (where :part (constantly :follower))
+      (concat notes)))
+
+)
 
 ; canone alla quarta, by johann sebastian bach
 (defn canone-alla-quarta [notes]
@@ -275,16 +292,16 @@
     (comp (interval -3) mirror (simple 3))
     notes))
 
-;(->> melody 
-;  canone-alla-quarta
-;  (concat bass)
-;  (where :pitch (comp G major))
-;  (where :time (bpm 90))
-;  play!
-;  graph!)
+(comment
+  (->> melody 
+    canone-alla-quarta
+    (concat bass)
+    (where :pitch (comp G major))
+    (where :time (bpm 90))
+    play!
+    graph!)
 
-
-
+)
 
 
 
