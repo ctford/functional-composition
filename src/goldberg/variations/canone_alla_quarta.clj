@@ -67,6 +67,27 @@
   (beep 300)
 )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Psycho-acoustics                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(comment
+  (bell 600 10.0)
+  (bell 500 10.0 0.0)
+  (bell 400 10.0 0.0 0.0)
+)
+
+
+
+
+
+
+
+
+
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Equal temperament                                         ;;
@@ -324,7 +345,7 @@
     (sketch 
       :title "Time vs pitch"
       :target :perm-frame
-      :setup (fn [] (smooth) (frame-rate 20) (background 200))  
+      :setup (fn [] (smooth) (frame-rate 20) (background 200))
       :draw  (fn []
                (let [colours
                        (fnil {:leader [190 90 90]
