@@ -20,8 +20,6 @@
 
 
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Sine waves                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -97,12 +95,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn note [timing pitch] {:time timing :pitch pitch}) 
+(defn where [k f notes] (->> notes (map #(update-in % [k] f))))
+(defn from [offset] (partial + offset))
 
 (defn play! [notes] 
-  (let [start (now)]
-    (doseq [{ms :time midi :pitch} notes]
-      (at (+ ms start) (ding! midi)))
-    notes))
+  (let [scheduled-notes (->> notes (where :time (from (now))))]
+    (doseq [{ms :time midi :pitch} scheduled-notes]
+      (at ms (ding! midi)))
+    scheduled-notes))
 
 (defn even-melody! [pitches]
   (let [times (reductions + (repeat 1000/3))
@@ -134,9 +134,7 @@
 
 (def major (scale [2 2 1 2 2 2 1]))
 
-(defn from [offset] (partial + offset))
 (def C (from 60))
-
 (defs [D E F G A B]
   (map
     (comp from C major)
@@ -191,11 +189,7 @@
 (defn bpm [beats] (fn [beat] (/ (* beat 60 1000) beats)))
 (comment
   ((bpm 120) 3)
-)
 
-(defn where [k f notes] (->> notes (map #(update-in % [k] f))))
-
-(comment
   (->> row-row-row-your-boat
     (where :time (bpm 90))
     (where :pitch (comp C major))
@@ -275,9 +269,6 @@
     (where :time (bpm 90))
     play!)
 
-)
-
-(comment
   (defn canon [f notes]
     (->> notes
       f
@@ -312,9 +303,8 @@
 ;; Graphing                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn graph! [notes]
-  (let [points (where :time (from (now)) notes)
-        highlow (fn [k]
+(defn graph! [points]
+  (let [highlow (fn [k]
                   (let [values (map k points)]
                     [(apply max values) 
                      (apply min values)]))
@@ -351,4 +341,4 @@
                      (- (* 2/3 (height)) (* 1/3 (height) y))
                      10 10)))) 
       :size [1024 768])
-    notes))
+    points))
