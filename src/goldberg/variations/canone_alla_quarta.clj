@@ -228,7 +228,8 @@
 
 (comment
   (even-melody! (map (comp G major)
-                     (run [0 4 -1 1 0])))
+                     (run [0 4 -1 1 0])
+                     ))
 
 )
 
