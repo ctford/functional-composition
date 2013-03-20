@@ -16,3 +16,7 @@ Thanks to everyone involved in building Overtone.
 A complete rendition of Canone alla Quarta:
 
 * https://github.com/ctford/goldberg
+
+If you're interested in using this code at a meetup
+etc please feel free. If you do, it would be nice if
+you let me know e.g. via Twitter.
