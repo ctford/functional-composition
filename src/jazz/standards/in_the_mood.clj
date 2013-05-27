@@ -26,7 +26,7 @@
     (->>
       bassline 
       (with hook) 
-      (where :pitch (comp C major))
+      (where :pitch (comp low B flat major))
       (with beat)
       (in-time (bpm 90)))))
 
