@@ -1,4 +1,4 @@
-(ns jazz.standards.in-the-mood 
+(ns jazz.standards.was-in-the-mood 
   (:use leipzig.scale, leipzig.melody, leipzig.live
         overtone.inst.sampled-piano
         [overtone.live :only [at ctl sample freesound-path]]))
