@@ -26,7 +26,7 @@
                        (where :pitch (comp lower lower)))
         hook #(->> (phrase (concat (repeat 11 1/2) [5/2]) (cycle [2 4 7]))
                    (where :pitch (from %))) 
-        beat (->> (phrase (cycle [1 1/2 1/2]) (repeat nil))
+        beat (->> (rhythm (cycle [1 1/2 1/2]))
                   (take 12)
                   (where :part (is :beat)))]
     (->>
@@ -37,5 +37,5 @@
       (in-time (comp (scale [2/3 1/3]) #(* 2 %)))
       (in-time (bpm 150)))))
 
-(comment (jam in-the-mood))
+(comment (jam (var in-the-mood)))
 (comment (def in-the-mood nil))

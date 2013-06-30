@@ -30,5 +30,5 @@
       (with beat)
       (in-time (bpm 90)))))
 
-(comment (jam in-the-mood))
+(comment (jam (var in-the-mood)))
 (comment (def in-the-mood nil))
