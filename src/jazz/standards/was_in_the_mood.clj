@@ -24,7 +24,7 @@
   (let [bassline #(->> (phrase [1 1 1 1/2 1/2 1 1 1 1] [0 2 4 5 4 7 5 4 2])
                        (where :pitch (from %))
                        (where :pitch (comp lower lower)))
-        hook #(->> (phrase (concat (repeat 11 1/2) [5/2]) (repeat triad))
+        hook #(->> (phrase (concat (repeat 11 1/2) [5/2]) (cycle [2 4 7]))
                    (where :pitch (from %))) 
         beat (->> (rhythm (cycle [1 1/2 1/2]))
                   (take 12)
