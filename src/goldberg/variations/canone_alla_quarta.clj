@@ -102,10 +102,10 @@
   (midi->hz 69)
 )
 
-(defn ding! [midi] (bell (midi->hz midi) 3))
+(defn ding [midi] (bell (midi->hz midi) 3))
 
 (comment
-  (ding! 69)
+  (ding 69)
 )
 
 
@@ -119,19 +119,19 @@
 (defn where [k f notes] (->> notes (map #(update-in % [k] f))))
 (defn from [offset] (partial + offset))
 
-(defn play! [notes] 
+(defn play [notes] 
   (let [scheduled-notes (->> notes (where :time (from (now))))]
     (doseq [{ms :time midi :pitch} scheduled-notes]
-      (at ms (ding! midi)))
+      (at ms (ding midi)))
     scheduled-notes))
 
-(defn even-melody! [pitches]
+(defn even-melody [pitches]
   (let [times (reductions + (repeat 1000/3))
         notes (map note times pitches)]
-    (play! notes)))
+    (play notes)))
 
 (comment
-  (even-melody! (range 70 81))
+  (even-melody (range 70 81))
 )
 
 
@@ -170,12 +170,12 @@
 (def chromatic (scale [1]))
 
 (comment
-  (even-melody!
+  (even-melody
     (map
       (comp C major)
       (concat (range 0 8) (reverse (range 0 7)))))
 
-  (even-melody!
+  (even-melody
     (let [_ -100] ; rest
       (map (comp D major) [0 1 2 0 0 1 2 0 2 3 4 _ 2 3 4 _])))
 
@@ -214,7 +214,7 @@
   (->> row-row-row-your-boat
     (where :time (bpm 90))
     (where :pitch (comp C major))
-    play!)
+    play)
 
 )
 
@@ -227,7 +227,7 @@
     [from]))
 
 (comment
-  (even-melody! (map (comp G major)
+  (even-melody (map (comp G major)
                      (run [0 4 -1 1 0])
                      ))
 
@@ -289,7 +289,7 @@
     (canon (simple 4))
     (where :pitch (comp C major))
     (where :time (bpm 90))
-    play!)
+    play)
 
   (defn canon [f notes]
     (->> notes
@@ -311,8 +311,8 @@
     (concat bass)
     (where :pitch (comp G major))
     (where :time (bpm 90))
-    play!
-    graph!)
+    play
+    graph)
 
 )
 
@@ -325,7 +325,7 @@
 ;; Graphing                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn graph! [points]
+(defn graph [points]
   (let [highlow (fn [k]
                   (let [values (map k points)]
                     [(apply max values) 
