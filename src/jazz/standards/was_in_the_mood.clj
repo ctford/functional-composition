@@ -6,12 +6,11 @@
 (defn in-time
   "Transform both :time and :duration according to timing."
   [timing notes]
-  (let [transform-duration
-         (fn [{start :time, duration :duration, :as note}]
-           (assoc note :duration (- (timing (+ start duration)) (timing start))))]
   (->> notes
-       (map transform-duration)
-       (where :time timing))))
+       (map (fn [{start :time, duration :duration, :as note}]
+              (-> note
+                  (assoc :duration (- (timing (+ start duration)) (timing start))))))
+       (where :time timing)))
 
 (defn mapthen [f notes] (->> notes (map f) (reduce #(then %2 %1))))
 
