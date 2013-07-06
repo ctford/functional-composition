@@ -48,8 +48,8 @@
 
 (definst bell [frequency 440 duration 10
                h0 1 h1 0.6 h2 0.4 h3 0.25 h4 0.2 h5 0.15]
-
   (let [harmonic-series [ 1  2  3  4  5  6]
+                        ;[ 1  2  3  4.2 5.4 6.8]
         proportions     [h0 h1 h2 h3 h4 h5]
         component
          (fn [harmonic proportion]
