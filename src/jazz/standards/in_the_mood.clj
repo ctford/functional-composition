@@ -9,10 +9,14 @@
   (->> notes
        (map (fn [{start :time, duration :duration, :as note}]
               (-> note
-                  (assoc :duration (- (timing (+ start duration)) (timing start))))))
+                  (assoc :duration (- (timing (+ start duration))
+                                      (timing start))))))
        (where :time timing)))
 
-(defn mapthen [f notes] (->> notes (map f) (reduce #(then %2 %1))))
+(defn mapthen [f & args]
+  (->> args
+       (apply map f)
+       (reduce #(then %2 %1))))
 
 (defmethod play-note :beat [note] ((sample (freesound-path 802))))
 (defmethod play-note :default [{midi :pitch, start :time, duration :duration}]
@@ -20,7 +24,8 @@
     (at (+ start duration) (ctl id :gate 0))))
 
 (def in-the-mood
-  (let [bassline [] 
+  (let [progression []
+        bassline [] 
         hook [] 
         beat (->> [] (where :part (is :beat)))]
     (->>
