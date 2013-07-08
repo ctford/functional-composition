@@ -172,7 +172,7 @@
 (comment
   (even-melody
     (map
-      (comp C major)
+      (comp C sharp major)
       (concat (range 0 8) (reverse (range 0 7)))))
 
   (even-melody
