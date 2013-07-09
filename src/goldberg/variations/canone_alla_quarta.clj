@@ -25,10 +25,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst tone [frequency 440] (sin-osc frequency))
-(definst doubletone [freq1 440 freq2 440]
-  (+
-    (sin-osc freq1)
-    (sin-osc freq2)))
 
 (definst beep [frequency 440 duration 1]
   (let [envelope (line 1 0 duration :action FREE)]
@@ -36,10 +32,14 @@
 
 (comment
   (tone 300)
-  (doubletone 300 300)
   (beep 300)
   (stop)
 )
+
+
+
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -174,10 +174,6 @@
     (map
       (comp C sharp major)
       (concat (range 0 8) (reverse (range 0 7)))))
-
-  (even-melody
-    (let [_ -100] ; rest
-      (map (comp D major) [0 1 2 0 0 1 2 0 2 3 4 _ 2 3 4 _])))
 
 )
 
