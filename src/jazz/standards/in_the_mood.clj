@@ -24,8 +24,7 @@
     (at (+ start duration) (ctl id :gate 0))))
 
 (def in-the-mood
-  (let [progression []
-        bassline [] 
+  (let [bassline [] 
         hook [] 
         beat (->> [] (where :part (is :beat)))]
     (->>
