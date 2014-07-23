@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functional Composition by Chris Ford (@ctford)            ;;
-;; ThoughtWorks Uganda                                       ;;
+;; ThoughtWorks                                              ;;
 ;;                                                           ;;
 ;; http://github.com/ctford/functional-composition           ;;
 ;; http://github.com/ctford/leipzig                          ;;
