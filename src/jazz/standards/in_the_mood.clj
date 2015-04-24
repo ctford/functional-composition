@@ -3,7 +3,7 @@
         overtone.inst.sampled-piano
         [overtone.live :only [at ctl sample freesound-path]]))
 
-(defn in-time
+(defn tempo
   "Transform both :time and :duration according to timing."
   [timing notes]
   (->> notes
@@ -36,7 +36,7 @@
       (with hook) 
       (where :pitch (comp low B flat major))
       (with beat)
-      (in-time (bpm 90)))))
+      (tempo (bpm 90)))))
 
 (comment (jam (var in-the-mood)))
 (comment (def in-the-mood nil))
