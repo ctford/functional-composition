@@ -308,7 +308,7 @@
     (where :pitch (comp G major))
     (where :time (bpm 90))
     play
-    graph)
+    #_graph)
 
 )
 
