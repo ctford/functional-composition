@@ -13,8 +13,17 @@
                                       (timing start))))))
        (where :time timing)))
 
-(defmethod play-note :beat [note] ((sample (freesound-path 802))))
-(defmethod play-note :default [{midi :pitch, start :time, duration :duration}]
+(defn mapthen [f & args]
+  (->> args
+       (apply map f)
+       (reduce #(then %2 %1))))
+
+(defmethod play-note :beat
+  [note]
+  ((sample (freesound-path 802))))
+
+(defmethod play-note :default
+  [{midi :pitch, start :time, duration :duration}]
   (let [id (sampled-piano midi)]
     (at (+ start duration) (ctl id :gate 0))))
 

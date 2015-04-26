@@ -9,7 +9,7 @@
 
 (ns goldberg.variations.canone-alla-quarta
   (:use [overtone.live :exclude
-          [scale pitch midi->hz note sharp flat run fill]]
+          [scale pitch midi->hz note sharp flat run]]
         [quil.core :only
           [smooth sketch ellipse frame-rate background
            width height stroke stroke-weight fill]]))
