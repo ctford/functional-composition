@@ -1,7 +1,7 @@
 (ns jazz.standards.was-in-the-mood 
   (:use leipzig.scale, leipzig.melody, leipzig.live, leipzig.chord
         overtone.inst.sampled-piano
-        [overtone.live :only [at ctl sample freesound-path]]))
+        [overtone.live :only [fx-reverb at ctl sample freesound-path]]))
 
 (defn in-time
   "Transform both :time and :duration according to timing."
