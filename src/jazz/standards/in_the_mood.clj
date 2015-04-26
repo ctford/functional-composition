@@ -1,36 +1,21 @@
 (ns jazz.standards.in-the-mood 
   (:use leipzig.scale, leipzig.melody, leipzig.live, leipzig.chord
-        overtone.inst.sampled-piano
+        jazz.instruments.piano
         [overtone.live :only [at ctl sample freesound-path]]))
 
-(defn tempo
-  "Transform both :time and :duration according to timing."
-  [timing notes]
-  (->> notes
-       (map (fn [{start :time, duration :duration, :as note}]
-              (-> note
-                  (assoc :duration (- (timing (+ start duration))
-                                      (timing start))))))
-       (where :time timing)))
-
-(defn mapthen [f & args]
-  (->> args
-       (apply map f)
-       (reduce #(then %2 %1))))
-
+; The band
 (defmethod play-note :beat
   [note]
   ((sample (freesound-path 802))))
 
 (defmethod play-note :default
-  [{midi :pitch, start :time, duration :duration}]
-  (let [id (sampled-piano midi)]
-    (at (+ start duration) (ctl id :gate 0))))
+  [{midi :pitch duration :duration}]
+  (piano midi duration))
 
 (def in-the-mood
   (let [bassline [] 
         hook [] 
-        beat (->> [] (where :part (is :beat)))]
+        beat (->> [] (all :part :beat))]
     (->>
       bassline 
       (with hook) 
