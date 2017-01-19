@@ -1,13 +1,12 @@
 (ns jazz.standards.in-the-mood
   (:use leipzig.scale, leipzig.melody, leipzig.live, leipzig.chord, leipzig.temperament
-        [overtone.live :only [FREE adsr line:kr sin-osc definst hpf lpf clip2 env-gen]]))
+        [overtone.live :only [square perc FREE adsr line:kr sin-osc definst hpf lpf clip2 env-gen]]))
 
 (def in-the-mood
   (let [bassline []
         hook []]
     (->>
       bassline
-      (with hook)
       (where :pitch (comp equal low B flat major))
       (tempo (bpm 90)))))
 
@@ -24,8 +23,10 @@
       (+ (* 1/2 (sin-osc (* 3.01 freq))))
       (+ (* 1/8 (sin-osc (* 5.01 freq))))
       (+ (* 2 (sin-osc (* 0.5 freq))))
+      (* (square 1/3))
       (clip2 0.7)
       (lpf top)
       (hpf 20)
-      (* (env-gen (adsr 0.01 0.2 0.8 0.2) (line:kr 1 0 dur) :action FREE))
+      (* (env-gen (adsr 0.01 0.2 0.8 0.02) (line:kr 1 0 dur) :action FREE))
+      ;(* (env-gen (perc 0.01 0.3)))
       (* vol)))
