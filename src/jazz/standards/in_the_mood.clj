@@ -13,10 +13,6 @@
 (comment (jam (var in-the-mood)))
 (comment (def in-the-mood nil))
 
-(defmethod play-note :default
-  [{midi :pitch seconds :duration}]
-  (-> midi (overchauffeur seconds 1500)))
-
 (definst overchauffeur [freq 110 dur 1.0 top 1500 vol 0.25]
   (-> (sin-osc freq)
       (+ (* 1/3 (sin-osc (* 2.01 freq))))
@@ -30,3 +26,7 @@
       (* (env-gen (adsr 0.01 0.2 0.8 0.02) (line:kr 1 0 dur) :action FREE))
       ;(* (env-gen (perc 0.01 0.3)))
       (* vol)))
+
+(defmethod play-note :default
+  [{midi :pitch seconds :duration}]
+  (-> midi (overchauffeur seconds 1500)))
