@@ -1,32 +1,47 @@
 (ns jazz.standards.in-the-mood
   (:use leipzig.scale, leipzig.melody, leipzig.live, leipzig.chord, leipzig.temperament
-        [overtone.live :only [square perc FREE adsr line:kr sin-osc definst hpf lpf clip2 env-gen]]))
+        [overtone.live :only [play-buf load-sample freesound-path sample apply-at apply-by now at ctl square perc FREE adsr line:kr sin-osc definst hpf lpf clip2 env-gen]]
+        jazz.piano))
 
 (def in-the-mood
-  (let [bassline []
-        hook []]
+  (let [bassline #(->> [0 2 4 5 4 7 5 4 2]
+                       (phrase [1 1 1 1/2 1/2 1 1 1 1])
+                       (where :pitch (comp lower lower))
+                       (where :pitch (from %)))
+        hook (mapthen #(phrase (concat (repeat 11 1/2) [5/2])
+                               ;(-> % vals sort cycle)
+                               (repeat %)
+                               )
+                      [(-> triad (root 7) (inversion 1))
+                       (-> triad (root 7) (inversion 1))
+                       (-> triad (root 3))
+                       (-> triad (root 7) (inversion 1))
+                       (-> triad (root 4))
+                       (-> triad (root 7) (inversion 1)) ])
+        beat (->> (rhythm [1 1/2 1/2])
+                  (times 24)
+                  (all :part :beat))]
+
     (->>
-      bassline
-      (where :pitch (comp equal low B flat major))
-      (tempo (bpm 90)))))
+      (mapthen bassline [0 0 3 0 4 0])
+;      (with hook)
+      (with beat)
+      (tempo (comp (scale [2/3 1/3]) #(* 2 %)))
+      (where :pitch (comp low B flat major))
+      (tempo (bpm 120)))))
 
-(comment (jam (var in-the-mood)))
-(comment (def in-the-mood nil))
+(comment
+  (jam (var in-the-mood))
+  (def in-the-mood nil)
+)
 
-(definst overchauffeur [freq 110 dur 1.0 top 1500 vol 0.25]
-  (-> (sin-osc freq)
-      (+ (* 1/3 (sin-osc (* 2.01 freq))))
-      (+ (* 1/2 (sin-osc (* 3.01 freq))))
-      (+ (* 1/8 (sin-osc (* 5.01 freq))))
-      (+ (* 2 (sin-osc (* 0.5 freq))))
-      (* (square 1/3))
-      (clip2 0.7)
-      (lpf top)
-      (hpf 20)
-      (* (env-gen (adsr 0.01 0.2 0.8 0.02) (line:kr 1 0 dur) :action FREE))
-      ;(* (env-gen (perc 0.01 0.3)))
-      (* vol)))
+(definst hat []
+  (let [buffer (load-sample (freesound-path 802))]
+    (play-buf 1 buffer)))
+
+(defmethod play-note :beat [_]
+  (hat))
 
 (defmethod play-note :default
-  [{midi :pitch seconds :duration}]
-  (-> midi (overchauffeur seconds 1500)))
+  [{midi :pitch, seconds :duration}]
+  (piano midi :duration seconds))
