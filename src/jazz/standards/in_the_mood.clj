@@ -1,7 +1,7 @@
 (ns jazz.standards.in-the-mood
   (:use leipzig.scale, leipzig.melody, leipzig.live, leipzig.chord, leipzig.temperament
         [overtone.live :only [play-buf load-sample freesound-path sample apply-at apply-by now at ctl square perc FREE adsr line:kr sin-osc definst hpf lpf clip2 env-gen]]
-        jazz.piano))
+        jazz.instruments))
 
 (def in-the-mood
   (let [bassline #(->> [0 2 4 5 4 7 5 4 2]
@@ -24,9 +24,9 @@
 
     (->>
       (mapthen bassline [0 0 3 0 4 0])
-;      (with hook)
+      (with hook)
       (with beat)
-      (tempo (comp (scale [2/3 1/3]) #(* 2 %)))
+      (tempo (comp (scale [2/3 1/3]) (partial * 2)))
       (where :pitch (comp low B flat major))
       (tempo (bpm 120)))))
 
@@ -34,10 +34,6 @@
   (jam (var in-the-mood))
   (def in-the-mood nil)
 )
-
-(definst hat []
-  (let [buffer (load-sample (freesound-path 802))]
-    (play-buf 1 buffer)))
 
 (defmethod play-note :beat [_]
   (hat))

@@ -1,6 +1,10 @@
-(ns jazz.piano
+(ns jazz.instruments
   (:use [overtone.core]
         [overtone.samples.piano :only [index-buffer]]))
+
+(definst hat []
+  (let [buffer (load-sample (freesound-path 802))]
+    (play-buf 1 buffer)))
 
 (definst piano
   [note 60 level 1 rate 1 loop? 0 duration 8
