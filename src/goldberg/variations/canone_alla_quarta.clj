@@ -115,11 +115,11 @@
 ;; Musical events                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn note [timing pitch] {:time timing :pitch pitch}) 
+(defn note [timing pitch] {:time timing :pitch pitch})
 (defn where [k f notes] (->> notes (map #(update-in % [k] f))))
 (defn from [offset] (partial + offset))
 
-(defn play [notes] 
+(defn play [notes]
   (let [scheduled-notes (->> notes (where :time (from (now))))]
     (doseq [{ms :time midi :pitch} scheduled-notes]
       (at ms (ding midi)))
@@ -185,9 +185,9 @@
   (let [pitches
          [0 0 0 1 2
           ; Row, row, row your boat,
-          2 1 2 3 4 
+          2 1 2 3 4
           ; Gently down the stream,
-          7 7 7 4 4 4 2 2 2 0 0 0 
+          7 7 7 4 4 4 2 2 2 0 0 0
           ; (take 4 (repeat "merrily"))
           4 3 2 1 0]
           ; Life is but a dream!
@@ -234,7 +234,7 @@
 (def repeats (partial mapcat #(apply repeat %)))
 (def runs (partial mapcat run))
 
-(def melody 
+(def melody
   (let [call
           [(repeats [[2 1/4] [1 1/2] [14 1/4] [1 3/2]])
           (runs [[0 -1 3 0] [4] [1 8]])]
@@ -302,7 +302,7 @@
     notes))
 
 (comment
-  (->> melody 
+  (->> melody
     canone-alla-quarta
     (concat bass)
     (where :pitch (comp G major))
@@ -324,7 +324,7 @@
 (defn graph [points]
   (let [highlow (fn [k]
                   (let [values (map k points)]
-                    [(apply max values) 
+                    [(apply max values)
                      (apply min values)]))
         [max-x min-x] (highlow :time)
         [max-y min-y] (highlow :pitch)
@@ -338,8 +338,8 @@
                       (filter #(< (:time %) (now)))
                       (adjust :time max-x min-x)
                       (adjust :pitch max-y min-y)))]
-                               
-    (sketch 
+
+    (sketch
       :title "Time vs pitch"
       :target :perm-frame
       :setup (fn [] (smooth) (frame-rate 20) (background 200))
@@ -357,6 +357,6 @@
                    (ellipse
                      (* (width) x)
                      (- (* 2/3 (height)) (* 1/3 (height) y))
-                     10 10)))) 
+                     10 10))))
       :size [1024 768])
     points))
