@@ -21,7 +21,7 @@
 
 
 (defmethod play-note :beat [_]
-  (closed-hat2))
+  (closed-hat2 :amp 1.0))
 
 (defmethod play-note :default
   [{midi :pitch, seconds :duration}]
