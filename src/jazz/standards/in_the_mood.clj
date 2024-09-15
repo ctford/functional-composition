@@ -41,4 +41,4 @@
 
 (defmethod play-note :default
   [{midi :pitch, seconds :duration}]
-  (piano midi :decay 0.1 :sustain 0.2 :release 0.1))
+  (piano midi :decay 0.01 :sustain 0 :release (- seconds 0.3)))
