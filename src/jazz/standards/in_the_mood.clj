@@ -41,4 +41,6 @@
 
 (defmethod play-note :default
   [{midi :pitch, seconds :duration}]
-  (piano midi :decay 0.01 :sustain 0 :release (- seconds 0.3)))
+  (-> midi
+      (+ 0.00001) ; Avoid a bug where a C is played as a B due to rounding.
+      (piano :sustain 0 :release 0 :decay (- seconds 0.3))))
