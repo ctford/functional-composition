@@ -1,7 +1,8 @@
 (ns jazz.standards.in-the-mood
   (:use leipzig.scale, leipzig.melody, leipzig.live, leipzig.chord, leipzig.temperament
-        [overtone.live :only [play-buf load-sample freesound-path sample apply-at apply-by now at ctl square perc FREE adsr line:kr sin-osc definst hpf lpf clip2 env-gen]]
-        jazz.instruments))
+        [overtone.live :only []]
+        [overtone.inst.piano :only [piano]]
+        [overtone.inst.drum :refer :all]))
 
 (def in-the-mood
   (let [bassline #(->> [0 2 4 5 4 7 5 4 2]
@@ -9,8 +10,8 @@
                        (where :pitch (comp lower lower))
                        (where :pitch (from %)))
         hook (mapthen #(phrase (concat (repeat 11 1/2) [5/2])
-                               ;(-> % vals sort cycle)
-                               (repeat %)
+                               (-> % vals sort cycle)
+                               ;(repeat %)
                                )
                       [(-> triad (root 7) (inversion 1))
                        (-> triad (root 7) (inversion 1))
@@ -31,13 +32,13 @@
       (tempo (bpm 120)))))
 
 (comment
-  (jam (var in-the-mood))
+  (-> in-the-mood var jam)
   (def in-the-mood nil)
 )
 
 (defmethod play-note :beat [_]
-  (hat))
+  (closed-hat2))
 
 (defmethod play-note :default
   [{midi :pitch, seconds :duration}]
-  (piano midi :duration seconds))
+  (piano midi :decay 0.1 :sustain 0.2 :release 0.1))
